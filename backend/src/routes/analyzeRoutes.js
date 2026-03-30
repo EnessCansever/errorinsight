@@ -3,6 +3,45 @@ const { analyzeError } = require('../controllers/analyzeController')
 
 const router = express.Router()
 
-router.post('/analyze', analyzeError)
+// Basit validation middleware
+const validateAnalyzeRequest = (req, res, next) => {
+  const { errorMessage } = req.body
+
+  // Boş request kontrolü
+  if (!errorMessage) {
+    return res.status(400).json({
+      success: false,
+      error: 'errorMessage alanı gerekli.',
+    })
+  }
+
+  // String kontrolü
+  if (typeof errorMessage !== 'string') {
+    return res.status(400).json({
+      success: false,
+      error: 'errorMessage bir string olmalı.',
+    })
+  }
+
+  // Boşluk kontrolü
+  if (errorMessage.trim().length === 0) {
+    return res.status(400).json({
+      success: false,
+      error: 'errorMessage boş bırakılamaz.',
+    })
+  }
+
+  // Max length kontrolü
+  if (errorMessage.length > 5000) {
+    return res.status(400).json({
+      success: false,
+      error: 'Hata mesajı çok uzun (max 5000 karakter).',
+    })
+  }
+
+  next()
+}
+
+router.post('/analyze', validateAnalyzeRequest, analyzeError)
 
 module.exports = router

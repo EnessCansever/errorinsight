@@ -22,4 +22,7 @@ Junior seviyeye uygun bir full stack proje iskeleti.
 - `GET /api/history`
 
 ## Not
-Bu aşamada AI entegrasyonu ve iş mantığı özellikle boş bırakılmıştır.
+Backend için gerekli env değişkenleri:
+- `PORT`
+- `GEMINI_API_KEY`
+- `GEMINI_MODEL` (isteğe bağlı, varsayılan: `gemini-2.5-flash`)

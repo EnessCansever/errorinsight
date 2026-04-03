@@ -1,6 +1,6 @@
 const analyzeService = require('../services/analyzeService')
 
-function analyzeError(req, res) {
+async function analyzeError(req, res) {
   try {
     const { errorMessage, codeSnippet } = req.body
 
@@ -13,7 +13,7 @@ function analyzeError(req, res) {
     }
 
     // Service'den analiz isteyelim
-    const analysis = analyzeService.analyzeError(errorMessage, codeSnippet)
+    const analysis = await analyzeService.analyzeError(errorMessage, codeSnippet)
 
     res.json({
       success: true,

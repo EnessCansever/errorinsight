@@ -13,9 +13,13 @@ function AnalyzePage() {
   const handleSubmit = async (event) => {
     event.preventDefault()
     setErrorText('')
+    setAnalysisResult(null)
 
-    if (!errorMessage.trim()) {
-      setErrorText('Lutfen hata mesaji alanini bos birakmayin.')
+    const trimmedErrorMessage = errorMessage.trim()
+    const trimmedCodeSnippet = codeSnippet.trim()
+
+    if (!trimmedErrorMessage) {
+      setErrorText('Lutfen once bir hata mesaji girin.')
       return
     }
 
@@ -23,13 +27,12 @@ function AnalyzePage() {
 
     try {
       const result = await analyzeErrorMessage({
-        errorMessage: errorMessage.trim(),
-        codeSnippet: codeSnippet.trim() || undefined,
+        errorMessage: trimmedErrorMessage,
+        codeSnippet: trimmedCodeSnippet || undefined,
       })
       setAnalysisResult(result)
     } catch (error) {
-      setAnalysisResult(null)
-      setErrorText(error.message)
+      setErrorText(error?.message || 'Analiz yapilirken bir sorun olustu. Lutfen tekrar deneyin.')
     } finally {
       setIsLoading(false)
     }

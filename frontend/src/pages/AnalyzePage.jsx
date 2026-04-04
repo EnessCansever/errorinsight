@@ -38,8 +38,9 @@ function AnalyzePage() {
     }
   }
 
-  const handleExampleSelect = (exampleMessage) => {
-    setErrorMessage(exampleMessage)
+  const handleExampleSelect = (example) => {
+    setErrorMessage(example.errorMessage)
+    setCodeSnippet(example.codeSnippet || '')
     setErrorText('')
   }
 
@@ -84,27 +85,30 @@ function AnalyzePage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isLoading ? 'Analiz ediliyor...' : 'Analiz Et'}
         </button>
       </form>
 
       {isLoading && (
-        <div className="rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-800">
-          Analiz hazirlaniyor, lutfen bekleyin...
+        <div className="rounded-xl border border-sky-200 bg-sky-50 p-4">
+          <p className="text-sm font-semibold text-sky-900">Analiz hazirlaniyor</p>
+          <p className="mt-1 text-sm text-sky-800">Lutfen bekleyin, hata mesaji yorumlaniyor.</p>
         </div>
       )}
 
       {!isLoading && errorText && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {errorText}
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+          <p className="text-sm font-semibold text-red-900">Analiz olusturulamadi</p>
+          <p className="mt-1 text-sm text-red-800">{errorText}</p>
         </div>
       )}
 
       {!isLoading && !errorText && !analysisResult && (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-          Henuz analiz sonucu yok. Bir hata mesaji girip "Analiz Et" butonuna bas.
+        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6">
+          <p className="text-sm font-semibold text-slate-800">Sonuc alani hazir</p>
+          <p className="mt-1 text-sm text-slate-600">Bir hata mesaji girip "Analiz Et" butonuna basarak sonucu bu alanda gorebilirsin.</p>
         </div>
       )}
 

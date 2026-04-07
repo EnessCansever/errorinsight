@@ -1,4 +1,5 @@
 const analyzeService = require('../services/analyzeService')
+const History = require('../models/History')
 
 async function analyzeError(req, res) {
   try {
@@ -14,6 +15,18 @@ async function analyzeError(req, res) {
 
     // Service'den analiz isteyelim
     const analysis = await analyzeService.analyzeError(errorMessage, codeSnippet)
+
+    // Analiz sonucu olusunca gecmise kaydet (kayit hatasi analiz akisini bozmaz)
+    try {
+      await History.create({
+        errorMessage,
+        codeSnippet: codeSnippet || '',
+        category: analysis.category,
+        shortSummary: analysis.shortSummary,
+      })
+    } catch (historyError) {
+      console.warn('[history] Kayit olusturulamadi:', historyError.message)
+    }
 
     res.json({
       success: true,

@@ -2,8 +2,10 @@ const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const apiRoutes = require('./routes')
+const { connectDatabase } = require('./config/database')
 
 dotenv.config()
+connectDatabase()
 
 const app = express()
 const PORT = process.env.PORT || 3001

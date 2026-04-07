@@ -24,5 +24,9 @@ Junior seviyeye uygun bir full stack proje iskeleti.
 ## Not
 Backend için gerekli env değişkenleri:
 - `PORT`
+- `MONGODB_URI`
 - `GEMINI_API_KEY`
 - `GEMINI_MODEL` (isteğe bağlı, varsayılan: `gemini-2.5-flash`)
+
+MongoDB için örnek URI:
+- `mongodb://127.0.0.1:27017/errorinsight`

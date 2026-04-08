@@ -47,9 +47,12 @@ function AnalyzePage() {
   return (
     <section className="space-y-5">
       <header className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+          Analyze
+        </p>
         <h2 className="text-2xl font-semibold text-slate-900">Hata Analizi</h2>
         <p className="max-w-2xl text-sm text-slate-600">
-          Ingilizce hata mesajini gir, istersen ilgili kodu ekle. Sistem backend mock endpointine istek atip sonucu Turkce aciklama ile gosterecek.
+          Ingilizce hata mesajini gir, istersen ilgili kodu ekle. Sistem bu veriyi backend analiz servisine gonderir ve sonucu Turkce olarak gosterir.
         </p>
       </header>
 
@@ -108,7 +111,9 @@ function AnalyzePage() {
       {!isLoading && !errorText && !analysisResult && (
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6">
           <p className="text-sm font-semibold text-slate-800">Sonuc alani hazir</p>
-          <p className="mt-1 text-sm text-slate-600">Bir hata mesaji girip "Analiz Et" butonuna basarak sonucu bu alanda gorebilirsin.</p>
+          <p className="mt-1 text-sm text-slate-600">
+            Bir hata mesaji girip "Analiz Et" butonuna basarak sonucu bu alanda gorebilirsin.
+          </p>
         </div>
       )}
 

@@ -32,10 +32,15 @@ function AnalyzeResultCard({ result }) {
   const badgeClass = badgeByCategory[result.category] || badgeByCategory.Unknown
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-6">
+    <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
       <header className="mb-5 border-b border-slate-200 pb-4">
-        <h3 className="text-lg font-semibold text-slate-900">Analiz Sonucu</h3>
-        <p className="mt-1 text-sm text-slate-600">Hata mesaji icin uretilen aciklama ve cozum onerileri.</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+          Result
+        </p>
+        <h3 className="mt-1 text-lg font-semibold text-slate-900">Analiz Sonucu</h3>
+        <p className="mt-1 text-sm leading-6 text-slate-600">
+          Hata mesaji icin uretilen aciklama ve cozum onerileri.
+        </p>
       </header>
 
       <div className="space-y-5">
@@ -92,7 +97,7 @@ function AnalyzeResultCard({ result }) {
                 <SyntaxHighlighter
                   language="javascript"
                   style={oneLight}
-                  customStyle={{ margin: 0, padding: '12px', fontSize: '12px' }}
+                  customStyle={{ margin: 0, padding: '14px', fontSize: '12px' }}
                   showLineNumbers
                 >
                   {result.exampleFixCode}

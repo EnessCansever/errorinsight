@@ -8,10 +8,13 @@ const links = [
 
 function Navbar() {
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <nav className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4">
-        <h1 className="text-xl font-semibold">ErrorInsight</h1>
-        <ul className="flex items-center gap-2">
+    <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
+      <nav className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-4">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-slate-900">ErrorInsight</h1>
+          <p className="text-xs text-slate-500">Simple error analysis demo</p>
+        </div>
+        <ul className="flex flex-wrap items-center gap-2">
           {links.map((link) => (
             <li key={link.to}>
               <NavLink

@@ -4,7 +4,7 @@ import { getHistoryDetail, getHistoryList } from '../services/historyApi'
 function formatDate(value) {
   try {
     return new Date(value).toLocaleString('tr-TR')
-  } catch (error) {
+  } catch {
     return value
   }
 }
@@ -15,12 +15,13 @@ function HistoryPage() {
   const [selectedDetail, setSelectedDetail] = useState(null)
   const [isListLoading, setIsListLoading] = useState(true)
   const [isDetailLoading, setIsDetailLoading] = useState(false)
-  const [errorText, setErrorText] = useState('')
+  const [listError, setListError] = useState('')
+  const [detailError, setDetailError] = useState('')
 
   useEffect(() => {
     async function fetchHistory() {
       setIsListLoading(true)
-      setErrorText('')
+      setListError('')
 
       try {
         const data = await getHistoryList()
@@ -30,7 +31,7 @@ function HistoryPage() {
           setSelectedId(data[0]._id)
         }
       } catch (error) {
-        setErrorText(error.message)
+        setListError(error.message)
       } finally {
         setIsListLoading(false)
       }
@@ -47,13 +48,14 @@ function HistoryPage() {
       }
 
       setIsDetailLoading(true)
-      setErrorText('')
+      setSelectedDetail(null)
+      setDetailError('')
 
       try {
         const detail = await getHistoryDetail(selectedId)
         setSelectedDetail(detail)
       } catch (error) {
-        setErrorText(error.message)
+        setDetailError(error.message)
       } finally {
         setIsDetailLoading(false)
       }
@@ -64,22 +66,34 @@ function HistoryPage() {
 
   return (
     <section className="space-y-4">
-      <header>
-        <h2 className="text-2xl font-semibold">Analiz Gecmisi</h2>
-        <p className="mt-1 text-sm text-slate-600">
+      <header className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+          History
+        </p>
+        <h2 className="text-2xl font-semibold text-slate-900">Analiz Gecmisi</h2>
+        <p className="max-w-2xl text-sm leading-6 text-slate-600">
           Son analizleri listeden secerek detaylarini gorebilirsin.
         </p>
       </header>
 
-      {errorText && (
+      {listError && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {errorText}
+          {listError}
+        </div>
+      )}
+
+      {detailError && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          {detailError}
         </div>
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="rounded-xl border border-slate-200 bg-white p-4">
-          <h3 className="text-base font-semibold text-slate-900">Son Analizler</h3>
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-base font-semibold text-slate-900">Son Analizler</h3>
+            <span className="text-xs text-slate-500">{historyItems.length} kayit</span>
+          </div>
 
           {isListLoading && (
             <p className="mt-3 text-sm text-slate-600">Gecmis yukleniyor...</p>

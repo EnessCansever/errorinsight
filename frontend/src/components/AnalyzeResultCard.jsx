@@ -34,11 +34,11 @@ function AnalyzeResultCard({ result }) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 md:p-6">
       <header className="mb-5 border-b border-slate-200 pb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6366F1]">
           Result
         </p>
-        <h3 className="mt-1 text-lg font-semibold text-slate-900">Analiz Sonucu</h3>
-        <p className="mt-1 text-sm leading-6 text-slate-600">
+        <h3 className="mt-1 text-xl font-bold text-slate-900">Analiz Sonucu</h3>
+        <p className="mt-1 text-sm leading-6 text-slate-500">
           Hata mesaji icin uretilen aciklama ve cozum onerileri.
         </p>
       </header>
@@ -89,7 +89,7 @@ function AnalyzeResultCard({ result }) {
                   <button
                     type="button"
                     onClick={copyCode}
-                    className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                    className="rounded border border-indigo-200 bg-indigo-50 px-2 py-1 text-xs font-semibold text-[#6366F1] hover:bg-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
                   >
                     {copied ? 'Kopyalandi' : 'Kopyala'}
                   </button>

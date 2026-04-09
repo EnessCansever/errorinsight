@@ -30,7 +30,7 @@ function ExampleErrorList({ onSelect }) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-4">
       <h3 className="text-sm font-semibold text-slate-900">Hizli Test Ornekleri</h3>
-      <p className="mt-1 text-sm leading-6 text-slate-600">
+      <p className="mt-1 text-sm leading-6 text-slate-500">
         Asagidaki orneklerden birine tiklayarak hata mesaji ve kod alanlarini hizlica doldurabilirsin.
       </p>
       <div className="mt-3 grid gap-2 md:grid-cols-2">
@@ -39,7 +39,7 @@ function ExampleErrorList({ onSelect }) {
             key={item.title}
             type="button"
             onClick={() => onSelect(item)}
-            className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-left transition hover:border-slate-300 hover:bg-white"
+            className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-left transition hover:border-[#6366F1]/35 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/25"
           >
             <p className="text-xs font-semibold text-slate-900">{item.title}</p>
             <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{item.errorMessage}</p>

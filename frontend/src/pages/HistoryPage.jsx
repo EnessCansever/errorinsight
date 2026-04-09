@@ -65,13 +65,13 @@ function HistoryPage() {
   }, [selectedId])
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-6">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6366F1]">
           History
         </p>
-        <h2 className="text-2xl font-semibold text-slate-900">Analiz Gecmisi</h2>
-        <p className="max-w-2xl text-sm leading-6 text-slate-600">
+        <h2 className="text-3xl font-bold text-slate-900">Analiz Gecmisi</h2>
+        <p className="max-w-2xl text-sm leading-6 text-slate-500">
           Son analizleri listeden secerek detaylarini gorebilirsin.
         </p>
       </header>
@@ -115,7 +115,7 @@ function HistoryPage() {
                       onClick={() => setSelectedId(item._id)}
                       className={`w-full rounded-lg border px-3 py-3 text-left transition ${
                         isActive
-                          ? 'border-slate-900 bg-slate-900 text-white'
+                          ? 'border-[#6366F1] bg-[#6366F1] text-white'
                           : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50'
                       }`}
                     >

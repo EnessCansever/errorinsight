@@ -45,13 +45,13 @@ function AnalyzePage() {
   }
 
   return (
-    <section className="space-y-5">
+    <section className="space-y-6">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6366F1]">
           Analyze
         </p>
-        <h2 className="text-2xl font-semibold text-slate-900">Hata Analizi</h2>
-        <p className="max-w-2xl text-sm text-slate-600">
+        <h2 className="text-3xl font-bold text-slate-900">Hata Analizi</h2>
+        <p className="max-w-2xl text-sm leading-6 text-slate-500">
           Ingilizce hata mesajini gir, istersen ilgili kodu ekle. Sistem bu veriyi backend analiz servisine gonderir ve sonucu Turkce olarak gosterir.
         </p>
       </header>
@@ -67,7 +67,7 @@ function AnalyzePage() {
             id="errorMessage"
             value={errorMessage}
             onChange={(event) => setErrorMessage(event.target.value)}
-            className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none ring-sky-200 transition focus:ring"
+            className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/25"
             placeholder="Ornek: Cannot read properties of undefined (reading 'map')"
           />
         </div>
@@ -80,7 +80,7 @@ function AnalyzePage() {
             id="codeSnippet"
             value={codeSnippet}
             onChange={(event) => setCodeSnippet(event.target.value)}
-            className="min-h-36 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm text-slate-800 outline-none ring-sky-200 transition focus:ring"
+            className="min-h-36 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm text-slate-800 outline-none transition focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/25"
             placeholder="Ornek kodu buraya ekleyebilirsin..."
           />
         </div>
@@ -88,7 +88,7 @@ function AnalyzePage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center rounded-lg bg-[#6366F1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5558E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isLoading ? 'Analiz ediliyor...' : 'Analiz Et'}
         </button>
@@ -111,7 +111,7 @@ function AnalyzePage() {
       {!isLoading && !errorText && !analysisResult && (
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6">
           <p className="text-sm font-semibold text-slate-800">Sonuc alani hazir</p>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-slate-500">
             Bir hata mesaji girip "Analiz Et" butonuna basarak sonucu bu alanda gorebilirsin.
           </p>
         </div>

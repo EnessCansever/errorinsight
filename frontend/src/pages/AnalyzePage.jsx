@@ -61,26 +61,26 @@ function AnalyzePage() {
       <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-5">
         <div className="space-y-1">
           <label htmlFor="errorMessage" className="text-sm font-semibold text-slate-900">
-            Hata Mesaji
+            Hata Mesaji <span className="text-red-500">*</span>
           </label>
           <textarea
             id="errorMessage"
             value={errorMessage}
             onChange={(event) => setErrorMessage(event.target.value)}
-            className="min-h-28 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/25"
+            className="min-h-28 w-full rounded-xl border border-slate-200 bg-slate-50/40 px-3 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 transition focus:border-[#6366F1]/40 focus:bg-white focus:ring-4 focus:ring-[#6366F1]/20"
             placeholder="Ornek: Cannot read properties of undefined (reading 'map')"
           />
         </div>
 
         <div className="space-y-1">
           <label htmlFor="codeSnippet" className="text-sm font-semibold text-slate-900">
-            Kod Parcasi (Opsiyonel)
+            Kod Parcasi <span className="text-slate-400 font-medium">(opsiyonel)</span>
           </label>
           <textarea
             id="codeSnippet"
             value={codeSnippet}
             onChange={(event) => setCodeSnippet(event.target.value)}
-            className="min-h-36 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm text-slate-800 outline-none transition focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/25"
+            className="min-h-36 w-full rounded-xl border border-slate-200 bg-slate-50/40 px-3 py-2.5 font-mono text-sm text-slate-800 outline-none placeholder:text-slate-400 transition focus:border-[#6366F1]/40 focus:bg-white focus:ring-4 focus:ring-[#6366F1]/20"
             placeholder="Ornek kodu buraya ekleyebilirsin..."
           />
         </div>
@@ -88,7 +88,7 @@ function AnalyzePage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex items-center rounded-lg bg-[#6366F1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5558E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center rounded-lg bg-linear-to-r from-[#6366F1] to-[#7C3AED] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
         >
           {isLoading ? 'Analiz ediliyor...' : 'Analiz Et'}
         </button>

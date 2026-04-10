@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import AnalyzeResultCard from '../components/AnalyzeResultCard'
 import ExampleErrorList from '../components/ExampleErrorList'
 import { analyzeErrorMessage } from '../services/analyzeApi'
@@ -51,6 +52,7 @@ function AnalyzePage() {
 
     if (!trimmedErrorMessage) {
       setErrorText('Lutfen once bir hata mesaji girin.')
+      toast.error('Hata mesaji girin.')
       return
     }
 
@@ -62,8 +64,11 @@ function AnalyzePage() {
         codeSnippet: trimmedCodeSnippet || undefined,
       })
       setAnalysisResult(result)
+      toast.success('Analiz tamamlandi.')
     } catch (error) {
-      setErrorText(error?.message || 'Analiz yapilirken bir sorun olustu. Lutfen tekrar deneyin.')
+      const message = error?.message || 'Analiz yapilirken bir sorun olustu. Lutfen tekrar deneyin.'
+      setErrorText(message)
+      toast.error('Bir hata olustu, lütfen tekrar deneyin.')
     } finally {
       setIsLoading(false)
     }

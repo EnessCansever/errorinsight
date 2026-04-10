@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { deleteHistory, getHistoryDetail, getHistoryList } from '../services/historyApi'
 
 function formatDate(value) {
@@ -78,6 +79,7 @@ function HistoryPage() {
 
     try {
       await deleteHistory(itemId)
+      toast.success('Kayıt silindi.')
 
       const updatedItems = historyItems.filter((item) => item._id !== itemId)
       setHistoryItems(updatedItems)
@@ -91,7 +93,9 @@ function HistoryPage() {
         }
       }
     } catch (error) {
-      setListError(error.message || 'Kayit silinemedi.')
+      const message = error.message || 'Kayit silinemedi.'
+      setListError(message)
+      toast.error('Kayıt silinemedi.')
     } finally {
       setDeletingId('')
     }

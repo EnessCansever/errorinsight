@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
+import toast from 'react-hot-toast'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
@@ -18,15 +19,18 @@ function AnalyzeResultCard({ result }) {
 
   const copyCode = async () => {
     if (!result.exampleFixCode) {
+      toast.error('Kopyalanacak kod bulunmuyor.')
       return
     }
 
     try {
       await navigator.clipboard.writeText(result.exampleFixCode)
       setCopied(true)
+      toast.success('Kod panoya kopyalandı.')
       setTimeout(() => setCopied(false), 1500)
     } catch (error) {
       setCopied(false)
+      toast.error('Kod kopyalanamadı.')
     }
   }
 

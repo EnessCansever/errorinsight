@@ -17,3 +17,28 @@ html.dark body {
 * {
   box-sizing: border-box;
 }
+
+.fixora-toast {
+  border-radius: 0.75rem !important;
+  border: 1px solid rgb(226 232 240) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: rgb(15 23 42) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12) !important;
+  padding: 0.75rem 0.875rem !important;
+  font-size: 0.875rem !important;
+}
+
+html.dark .fixora-toast {
+  border-color: rgb(51 65 85) !important;
+  background: rgba(15, 23, 42, 0.96) !important;
+  color: rgb(226 232 240) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35) !important;
+}
+
+.fixora-toast-success {
+  border-left: 4px solid #6366f1 !important;
+}
+
+.fixora-toast-error {
+  border-left: 4px solid #ef4444 !important;
+}

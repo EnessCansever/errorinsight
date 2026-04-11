@@ -19,6 +19,26 @@ const historySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    turkishExplanation: {
+      type: String,
+      default: '',
+    },
+    possibleCauses: {
+      type: [String],
+      default: [],
+    },
+    solutionSteps: {
+      type: [String],
+      default: [],
+    },
+    exampleFixCode: {
+      type: String,
+      default: '',
+    },
+    notes: {
+      type: String,
+      default: '',
+    },
   },
   {
     timestamps: true,

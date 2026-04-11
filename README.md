@@ -76,21 +76,36 @@ npm install
 npm run dev
 ```
 
-## Environment Variables
+## Deployment Configuration
 
-### Backend (.env)
+### Backend env
+
+Gerekli alanlar:
+- `NODE_ENV` (yoksa development kabul edilir)
+- `PORT` (yoksa 5000)
+- `MONGODB_URI` (zorunlu)
+- `GEMINI_API_KEY` (zorunlu)
+- `FRONTEND_ORIGIN` (production ortaminda zorunlu)
+
+Ornek:
 
 ```env
-PORT=3001
-MONGODB_URI=mongodb://127.0.0.1:27017/fixora
+NODE_ENV=production
+PORT=5000
+MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/fixora
 GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-2.5-flash
+FRONTEND_ORIGIN=https://fixora.com,https://www.fixora.com
 ```
 
-### Frontend (.env)
+### Frontend env
+
+Gerekli alan:
+- `VITE_API_BASE_URL`
+
+Ornek:
 
 ```env
-VITE_API_BASE_URL=http://localhost:3001
+VITE_API_BASE_URL=https://api.fixora.com/api
 ```
 
 ## Kullanım

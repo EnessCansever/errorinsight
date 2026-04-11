@@ -1,7 +1,7 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
+import { buildApiUrl } from './apiConfig'
 
 export async function getHistoryList() {
-  const response = await fetch(`${API_BASE_URL}/api/history`)
+  const response = await fetch(buildApiUrl('/history'))
   const result = await response.json()
 
   if (!response.ok) {
@@ -12,7 +12,7 @@ export async function getHistoryList() {
 }
 
 export async function getHistoryDetail(id) {
-  const response = await fetch(`${API_BASE_URL}/api/history/${id}`)
+  const response = await fetch(buildApiUrl(`/history/${id}`))
   const result = await response.json()
 
   if (!response.ok) {
@@ -23,7 +23,7 @@ export async function getHistoryDetail(id) {
 }
 
 export async function deleteHistory(id) {
-  const response = await fetch(`${API_BASE_URL}/api/history/${id}`, {
+  const response = await fetch(buildApiUrl(`/history/${id}`), {
     method: 'DELETE',
   })
   const result = await response.json()

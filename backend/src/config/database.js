@@ -2,19 +2,19 @@ const mongoose = require('mongoose')
 
 mongoose.set('bufferCommands', false)
 
-async function connectDatabase() {
-  const mongoUri = process.env.MONGODB_URI
+async function connectDatabase(mongoUri) {
+  const targetUri = mongoUri || process.env.MONGODB_URI
 
-  if (!mongoUri) {
-    console.warn('[database] MONGODB_URI tanimli degil. Gecmis kayitlari calismayacak.')
-    return
+  if (!targetUri) {
+    throw new Error('[database] MONGODB_URI tanimli degil.')
   }
 
   try {
-    await mongoose.connect(mongoUri)
+    await mongoose.connect(targetUri)
     console.log('[database] MongoDB baglantisi basarili.')
   } catch (error) {
     console.error('[database] MongoDB baglanti hatasi:', error.message)
+    throw error
   }
 }
 

@@ -3,14 +3,33 @@ const cors = require('cors')
 const dotenv = require('dotenv')
 const apiRoutes = require('./routes')
 const { connectDatabase } = require('./config/database')
+const { loadEnvConfig } = require('./config/env')
 
 dotenv.config()
-connectDatabase()
+const env = loadEnvConfig()
 
 const app = express()
-const PORT = process.env.PORT || 3001
+const allowedOrigins = new Set(env.frontendOrigins)
 
-app.use(cors())
+if (env.nodeEnv === 'development') {
+  allowedOrigins.add('http://localhost:5173')
+}
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.has(origin)) {
+      return callback(null, true)
+    }
+
+    return callback(new Error('CORS engeli: Bu origin icin izin tanimli degil.'))
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 204,
+}
+
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.get('/', (req, res) => {
@@ -19,6 +38,15 @@ app.get('/', (req, res) => {
 
 app.use('/api', apiRoutes)
 
-app.listen(PORT, () => {
-  console.log(`Server calisiyor: http://localhost:${PORT}`)
+async function startServer() {
+  await connectDatabase(env.mongoUri)
+
+  app.listen(env.port, () => {
+    console.log(`Server calisiyor: http://localhost:${env.port}`)
+  })
+}
+
+startServer().catch((error) => {
+  console.error('[startup] Backend baslatilamadi:', error.message)
+  process.exit(1)
 })

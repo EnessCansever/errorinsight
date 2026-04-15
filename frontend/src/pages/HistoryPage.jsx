@@ -89,7 +89,7 @@ function HistoryPage() {
   }, [selectedId])
 
   const handleDelete = async (itemId) => {
-    const confirmed = window.confirm('Bu kaydi silmek istediginize emin misiniz?')
+    const confirmed = window.confirm('Bu kaydı silmek istediğinize emin misiniz?')
 
     if (!confirmed) {
       return

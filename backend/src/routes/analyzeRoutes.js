@@ -1,6 +1,7 @@
 const express = require('express')
 const { analyzeError } = require('../controllers/analyzeController')
 const { analyzeRateLimiter } = require('../middlewares/rateLimiters')
+const { requireAuth } = require('../middlewares/requireAuth')
 
 const router = express.Router()
 
@@ -43,6 +44,6 @@ const validateAnalyzeRequest = (req, res, next) => {
   next()
 }
 
-router.post('/analyze', analyzeRateLimiter, validateAnalyzeRequest, analyzeError)
+router.post('/analyze', requireAuth, analyzeRateLimiter, validateAnalyzeRequest, analyzeError)
 
 module.exports = router

@@ -1,4 +1,5 @@
 const express = require('express')
+const { requireAuth } = require('../middlewares/requireAuth')
 const {
 	getHistory,
 	getHistoryById,
@@ -8,9 +9,9 @@ const {
 
 const router = express.Router()
 
-router.get('/history', getHistory)
-router.get('/history/:id', getHistoryById)
-router.delete('/history/:id', deleteHistoryById)
-router.post('/history/:id/feedback', submitHistoryFeedback)
+router.get('/history', requireAuth, getHistory)
+router.get('/history/:id', requireAuth, getHistoryById)
+router.delete('/history/:id', requireAuth, deleteHistoryById)
+router.post('/history/:id/feedback', requireAuth, submitHistoryFeedback)
 
 module.exports = router

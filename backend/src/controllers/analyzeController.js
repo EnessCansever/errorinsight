@@ -31,7 +31,7 @@ function buildReusableAnalysis(historyRecord) {
   }
 }
 
-async function findReusableAnalysis(errorMessage, codeSnippet) {
+async function findReusableAnalysis(userId, errorMessage, codeSnippet) {
   const normalizedError = normalizeForMatch(errorMessage)
   const normalizedSnippet = normalizeForMatch(codeSnippet)
 
@@ -39,7 +39,10 @@ async function findReusableAnalysis(errorMessage, codeSnippet) {
     return null
   }
 
-  const candidates = await History.find({ errorMessage: { $exists: true } })
+  const candidates = await History.find({
+    user: userId,
+    errorMessage: { $exists: true },
+  })
     .sort({ createdAt: -1 })
     .limit(REUSE_LOOKUP_LIMIT)
     .lean()
@@ -64,7 +67,15 @@ async function findReusableAnalysis(errorMessage, codeSnippet) {
 
 async function analyzeError(req, res) {
   try {
+    const userId = req.user?.id
     const { errorMessage, codeSnippet } = req.body
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Bu işlem için giriş yapmanız gerekiyor.',
+      })
+    }
 
     // Validation zaten route middleware'de yapılıyor, ama ekstra kontrol
     if (!errorMessage || errorMessage.trim().length === 0) {
@@ -77,7 +88,7 @@ async function analyzeError(req, res) {
     let analysis = null
 
     try {
-      const reusableAnalysis = await findReusableAnalysis(errorMessage, codeSnippet)
+      const reusableAnalysis = await findReusableAnalysis(userId, errorMessage, codeSnippet)
       if (reusableAnalysis) {
         analysis = reusableAnalysis
       }
@@ -94,6 +105,7 @@ async function analyzeError(req, res) {
     // Analiz sonucu olusunca gecmise kaydet (kayit hatasi analiz akisini bozmaz)
     try {
       const createdHistory = await History.create({
+        user: userId,
         errorMessage,
         codeSnippet: codeSnippet || '',
         category: analysis.category,

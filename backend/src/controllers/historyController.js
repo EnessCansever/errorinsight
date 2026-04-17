@@ -2,7 +2,7 @@ const History = require('../models/History')
 
 async function getHistory(req, res) {
   try {
-    const history = await History.find()
+    const history = await History.find({ user: req.user.id })
       .sort({ createdAt: -1 })
       .select('errorMessage codeSnippet category shortSummary createdAt')
 
@@ -20,7 +20,10 @@ async function getHistory(req, res) {
 
 async function getHistoryById(req, res) {
   try {
-    const item = await History.findById(req.params.id)
+    const item = await History.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    })
 
     if (!item) {
       return res.status(404).json({
@@ -43,7 +46,10 @@ async function getHistoryById(req, res) {
 
 async function deleteHistoryById(req, res) {
   try {
-    const deletedItem = await History.findByIdAndDelete(req.params.id)
+    const deletedItem = await History.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    })
 
     if (!deletedItem) {
       return res.status(404).json({
@@ -78,8 +84,11 @@ async function submitHistoryFeedback(req, res) {
 
     const updateField = feedbackType === 'positive' ? 'positiveFeedbackCount' : 'negativeFeedbackCount'
 
-    const updatedItem = await History.findByIdAndUpdate(
-      id,
+    const updatedItem = await History.findOneAndUpdate(
+      {
+        _id: id,
+        user: req.user.id,
+      },
       { $inc: { [updateField]: 1 } },
       { returnDocument: 'after', runValidators: true },
     ).select('_id positiveFeedbackCount negativeFeedbackCount')

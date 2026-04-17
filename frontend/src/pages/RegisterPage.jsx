@@ -1,0 +1,134 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { useAuth } from '../context/AuthContext'
+
+export default function RegisterPage() {
+  const navigate = useNavigate()
+  const { register, isAuthLoading } = useAuth()
+
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+
+    if (!name || !email || !password) {
+      setError('Ad, e-posta ve şifre alanları zorunludur.')
+      return
+    }
+
+    if (password.length < 6) {
+      setError('Şifre en az 6 karakter olmalıdır.')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      await register(name, email, password)
+      toast.success('Başarıyla kayıt oldunuz.')
+      navigate('/analyze')
+    } catch (err) {
+      const message = err?.message || 'Kayıt işlemi sırasında bir hata oluştu.'
+      setError(message)
+      toast.error(message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-slate-600 dark:text-slate-400">Yükleniyor...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-white px-4 py-12 dark:bg-slate-950 sm:px-6 lg:px-8">
+      <div className="w-full max-w-sm space-y-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Kayıt Ol</h2>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Zaten hesabınız varsa{' '}
+            <button
+              type="button"
+              onClick={() => navigate('/login')}
+              className="font-medium text-[#6366F1] hover:text-[#4f46e5]"
+            >
+              giriş yapın
+            </button>
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
+              Ad
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-slate-900 placeholder-slate-500 focus:border-[#6366F1] focus:outline-none focus:ring-1 focus:ring-[#6366F1] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400"
+              placeholder="Adınız"
+              disabled={isLoading}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
+              E-Posta
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-slate-900 placeholder-slate-500 focus:border-[#6366F1] focus:outline-none focus:ring-1 focus:ring-[#6366F1] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400"
+              placeholder="ornek@email.com"
+              disabled={isLoading}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-slate-900 dark:text-slate-100">
+              Şifre
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-slate-900 placeholder-slate-500 focus:border-[#6366F1] focus:outline-none focus:ring-1 focus:ring-[#6366F1] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-400"
+              placeholder="••••••••"
+              disabled={isLoading}
+            />
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">En az 6 karakter</p>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full rounded-lg bg-[#6366F1] px-4 py-2 font-medium text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/60 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoading ? 'Kayıt olunuyor...' : 'Kayıt Ol'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}

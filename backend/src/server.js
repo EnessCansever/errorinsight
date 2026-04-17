@@ -1,12 +1,14 @@
 const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
+
+dotenv.config()
+
 const apiRoutes = require('./routes')
 const { connectDatabase } = require('./config/database')
 const { loadEnvConfig } = require('./config/env')
 const { requestLogger } = require('./middlewares/requestLogger')
 
-dotenv.config()
 const env = loadEnvConfig()
 
 const app = express()

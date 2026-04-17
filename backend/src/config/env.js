@@ -19,11 +19,18 @@ function parseFrontendOrigins(value) {
     .filter(Boolean)
 }
 
+function normalizeJwtExpiresIn(value) {
+  const normalized = (value || '').trim()
+  return normalized || '7d'
+}
+
 function loadEnvConfig() {
   const nodeEnv = normalizeNodeEnv(process.env.NODE_ENV)
   const port = normalizePort(process.env.PORT)
   const mongoUri = process.env.MONGODB_URI?.trim()
   const geminiApiKey = process.env.GEMINI_API_KEY?.trim()
+  const jwtSecret = process.env.JWT_SECRET?.trim()
+  const jwtExpiresIn = normalizeJwtExpiresIn(process.env.JWT_EXPIRES_IN)
   const frontendOrigins = parseFrontendOrigins(process.env.FRONTEND_ORIGIN)
 
   const errors = []
@@ -34,6 +41,10 @@ function loadEnvConfig() {
 
   if (!geminiApiKey) {
     errors.push('GEMINI_API_KEY zorunludur.')
+  }
+
+  if (!jwtSecret) {
+    errors.push('JWT_SECRET zorunludur.')
   }
 
   if (nodeEnv === 'production' && frontendOrigins.length === 0) {
@@ -49,6 +60,8 @@ function loadEnvConfig() {
     port,
     mongoUri,
     geminiApiKey,
+    jwtSecret,
+    jwtExpiresIn,
     frontendOrigins,
   }
 }

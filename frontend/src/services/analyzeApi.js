@@ -2,6 +2,19 @@ import { buildApiUrl } from './apiConfig'
 
 const NETWORK_ERROR_MESSAGE = 'Sunucuya ulaşılamadı. İnternet bağlantınızı veya ağ erişimini kontrol edin.'
 const INVALID_RESPONSE_MESSAGE = 'Sunucudan geçersiz bir yanıt alındı.'
+const AUTH_TOKEN_KEY = 'fixora_auth_token'
+
+function getAuthHeaders() {
+  const token = localStorage.getItem(AUTH_TOKEN_KEY)
+
+  if (!token) {
+    return {}
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  }
+}
 
 async function parseResponseBody(response) {
   const rawBody = await response.text()
@@ -62,6 +75,7 @@ export async function analyzeErrorMessage(payload) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(payload),
     },

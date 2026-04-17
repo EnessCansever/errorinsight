@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Bars3Icon, MoonIcon, SunIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
-const links = [
+const publicLinks = [
   { to: '/', label: 'Ana Sayfa' },
+]
+
+const privateLinks = [
   { to: '/analyze', label: 'Analiz' },
   { to: '/history', label: 'Geçmiş' },
 ]
@@ -11,6 +15,8 @@ const links = [
 const THEME_KEY = 'fixora-theme'
 
 function Navbar() {
+  const navigate = useNavigate()
+  const { isAuthenticated, user, logout } = useAuth()
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -32,6 +38,14 @@ function Navbar() {
     setIsMobileMenuOpen(false)
   }
 
+  const links = isAuthenticated ? [...publicLinks, ...privateLinks] : publicLinks
+
+  const handleLogout = () => {
+    logout()
+    closeMobileMenu()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <header className="border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
       <nav className="mx-auto w-full max-w-6xl px-3 py-3 sm:px-4 sm:py-4">
@@ -42,6 +56,29 @@ function Navbar() {
         </div>
 
         <div className="hidden items-center gap-2 md:flex">
+          {!isAuthenticated && (
+            <>
+              <NavLink
+                to="/login"
+                className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-indigo-50 hover:text-[#6366F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-indigo-300"
+              >
+                Giriş Yap
+              </NavLink>
+              <NavLink
+                to="/register"
+                className="inline-flex min-h-10 items-center rounded-md bg-[#6366F1] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
+              >
+                Kayıt Ol
+              </NavLink>
+            </>
+          )}
+
+          {isAuthenticated && (
+            <div className="mr-1 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              {user?.name || user?.email || 'Kullanıcı'}
+            </div>
+          )}
+
           <button
             type="button"
             onClick={toggleTheme}
@@ -73,6 +110,16 @@ function Navbar() {
             </li>
           ))}
           </ul>
+
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex min-h-10 items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-red-50 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+            >
+              Çıkış Yap
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
@@ -98,6 +145,31 @@ function Navbar() {
 
         {isMobileMenuOpen && (
           <div className="mt-3 space-y-2 rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-700 dark:bg-slate-900 md:hidden">
+            {isAuthenticated && (
+              <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                {user?.name || user?.email || 'Kullanıcı'}
+              </div>
+            )}
+
+            {!isAuthenticated && (
+              <>
+                <NavLink
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="flex min-h-11 items-center rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-indigo-50 hover:text-[#6366F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-indigo-300"
+                >
+                  Giriş Yap
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  onClick={closeMobileMenu}
+                  className="flex min-h-11 items-center rounded-lg bg-[#6366F1] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
+                >
+                  Kayıt Ol
+                </NavLink>
+              </>
+            )}
+
             {links.map((link) => (
               <NavLink
                 key={link.to}
@@ -114,6 +186,16 @@ function Navbar() {
                 {link.label}
               </NavLink>
             ))}
+
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-left text-sm font-semibold text-slate-700 transition hover:bg-red-50 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300/50 dark:text-slate-300 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+              >
+                Çıkış Yap
+              </button>
+            )}
           </div>
         )}
       </nav>

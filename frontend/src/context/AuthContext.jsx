@@ -10,7 +10,6 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null)
   const [isAuthLoading, setIsAuthLoading] = useState(true)
 
-  // Initialize auth state from localStorage
   useEffect(() => {
     const initializeAuth = async () => {
       const storedToken = localStorage.getItem(AUTH_TOKEN_KEY)
@@ -21,7 +20,6 @@ export function AuthProvider({ children }) {
           setToken(storedToken)
           setUser(userData.user)
         } catch {
-          // Token geçersiz veya süresi dolmuş
           localStorage.removeItem(AUTH_TOKEN_KEY)
           setToken(null)
           setUser(null)
@@ -35,27 +33,27 @@ export function AuthProvider({ children }) {
   }, [])
 
   const register = useCallback(async (name, email, password) => {
-    setIsAuthLoading(true)
-    try {
-      const data = await registerUser(name, email, password)
-      localStorage.setItem(AUTH_TOKEN_KEY, data.token)
-      setToken(data.token)
-      setUser(data.user)
-    } finally {
-      setIsAuthLoading(false)
+    const data = await registerUser(name, email, password)
+
+    if (!data?.token || !data?.user) {
+      throw new Error('Kayıt işlemi sırasında bir hata oluştu.')
     }
+
+    localStorage.setItem(AUTH_TOKEN_KEY, data.token)
+    setToken(data.token)
+    setUser(data.user)
   }, [])
 
   const login = useCallback(async (email, password) => {
-    setIsAuthLoading(true)
-    try {
-      const data = await loginUser(email, password)
-      localStorage.setItem(AUTH_TOKEN_KEY, data.token)
-      setToken(data.token)
-      setUser(data.user)
-    } finally {
-      setIsAuthLoading(false)
+    const data = await loginUser(email, password)
+
+    if (!data?.token || !data?.user) {
+      throw new Error('Giriş işlemi sırasında bir hata oluştu.')
     }
+
+    localStorage.setItem(AUTH_TOKEN_KEY, data.token)
+    setToken(data.token)
+    setUser(data.user)
   }, [])
 
   const logout = useCallback(() => {
@@ -81,8 +79,10 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const context = useContext(AuthContext)
+
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider')
   }
+
   return context
 }

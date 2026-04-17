@@ -5,16 +5,22 @@ import AnalyzePage from './pages/AnalyzePage'
 import HistoryPage from './pages/HistoryPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ProtectedRoute from './components/ProtectedRoute'
+import PublicOnlyRoute from './components/PublicOnlyRoute'
 
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route element={<PublicOnlyRoute />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Route>
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/analyze" element={<AnalyzePage />} />
-        <Route path="/history" element={<HistoryPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/analyze" element={<AnalyzePage />} />
+          <Route path="/history" element={<HistoryPage />} />
+        </Route>
       </Route>
     </Routes>
   )

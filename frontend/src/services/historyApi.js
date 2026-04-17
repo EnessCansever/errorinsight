@@ -2,6 +2,19 @@ import { buildApiUrl } from './apiConfig'
 
 const NETWORK_ERROR_MESSAGE = 'Sunucuya ulaşılamadı. İnternet bağlantınızı veya ağ erişimini kontrol edin.'
 const INVALID_RESPONSE_MESSAGE = 'Sunucudan geçersiz bir yanıt alındı.'
+const AUTH_TOKEN_KEY = 'fixora_auth_token'
+
+function getAuthHeaders() {
+  const token = localStorage.getItem(AUTH_TOKEN_KEY)
+
+  if (!token) {
+    return {}
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  }
+}
 
 async function parseResponseBody(response) {
   const rawBody = await response.text()
@@ -56,13 +69,31 @@ async function requestJson(url, options, fallbackMessage) {
 }
 
 export async function getHistoryList() {
-  const result = await requestJson(buildApiUrl('/history'), undefined, 'Geçmiş kayıtları alınamadı.')
+  const result = await requestJson(
+    buildApiUrl('/history'),
+    {
+      method: 'GET',
+      headers: {
+        ...getAuthHeaders(),
+      },
+    },
+    'Geçmiş kayıtları alınamadı.',
+  )
 
   return result.data
 }
 
 export async function getHistoryDetail(id) {
-  const result = await requestJson(buildApiUrl(`/history/${id}`), undefined, 'Kayıt detayı alınamadı.')
+  const result = await requestJson(
+    buildApiUrl(`/history/${id}`),
+    {
+      method: 'GET',
+      headers: {
+        ...getAuthHeaders(),
+      },
+    },
+    'Kayıt detayı alınamadı.',
+  )
 
   return result.data
 }
@@ -72,6 +103,9 @@ export async function deleteHistory(id) {
     buildApiUrl(`/history/${id}`),
     {
       method: 'DELETE',
+      headers: {
+        ...getAuthHeaders(),
+      },
     },
     'Kayıt silinemedi.',
   )
@@ -86,6 +120,7 @@ export async function sendHistoryFeedback(id, feedbackType) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ feedbackType }),
     },

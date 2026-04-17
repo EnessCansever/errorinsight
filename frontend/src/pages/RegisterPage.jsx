@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const { register, isAuthLoading } = useAuth()
+  const { register } = useAuth()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -40,14 +40,6 @@ export default function RegisterPage() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-slate-600 dark:text-slate-400">Yükleniyor...</p>
-      </div>
-    )
   }
 
   return (

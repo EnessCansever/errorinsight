@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useAuth } from '../context/AuthContext'
 import { deleteHistory, getHistoryDetail, getHistoryList } from '../services/historyApi'
 
 function formatDate(value) {
@@ -25,6 +26,7 @@ function getCategoryLabel(category) {
 }
 
 function HistoryPage() {
+  const { isAuthenticated } = useAuth()
   const [historyItems, setHistoryItems] = useState([])
   const [selectedId, setSelectedId] = useState('')
   const [selectedDetail, setSelectedDetail] = useState(null)
@@ -34,7 +36,24 @@ function HistoryPage() {
   const [listError, setListError] = useState('')
   const [detailError, setDetailError] = useState('')
 
+  // Merkezi state temizleme helper: auth düşüşü veya unauthorized geçişinde
+  const resetHistoryState = useCallback(() => {
+    setHistoryItems([])
+    setSelectedId('')
+    setSelectedDetail(null)
+    setListError('')
+    setDetailError('')
+    setIsListLoading(false)
+    setIsDetailLoading(false)
+    setDeletingId('')
+  }, [])
+
   const fetchHistory = useCallback(async () => {
+    if (!isAuthenticated) {
+      resetHistoryState()
+      return
+    }
+
     setIsListLoading(true)
     setListError('')
 
@@ -61,17 +80,26 @@ function HistoryPage() {
     } finally {
       setIsListLoading(false)
     }
-  }, [])
+  }, [isAuthenticated, resetHistoryState])
 
   useEffect(() => {
     fetchHistory()
   }, [fetchHistory])
 
+  // Auth düşüşünde sayfanın tüm state'i temizle (stale content gösterilmesin)
+  useEffect(() => {
+    if (isAuthenticated) {
+      return
+    }
+
+    resetHistoryState()
+  }, [isAuthenticated, resetHistoryState])
+
   useEffect(() => {
     let isCancelled = false
 
     async function fetchDetail() {
-      if (!selectedId) {
+      if (!isAuthenticated || !selectedId) {
         setSelectedDetail(null)
         setDetailError('')
         setIsDetailLoading(false)
@@ -105,9 +133,13 @@ function HistoryPage() {
     return () => {
       isCancelled = true
     }
-  }, [selectedId])
+  }, [isAuthenticated, selectedId])
 
   const handleDelete = async (itemId) => {
+    if (!isAuthenticated) {
+      return
+    }
+
     const confirmed = window.confirm('Bu kaydı silmek istediğinize emin misiniz?')
 
     if (!confirmed) {

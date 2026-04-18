@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback,useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import AnalyzeResultCard from '../components/AnalyzeResultCard'
 import ExampleErrorList from '../components/ExampleErrorList'
+import { useAuth } from '../context/AuthContext'
 import { analyzeErrorMessage } from '../services/analyzeApi'
 
 const LOADING_MESSAGES = [
@@ -87,12 +88,23 @@ function StagedLoadingMessage({ message, step }) {
 }
 
 function AnalyzePage() {
+  const { isAuthenticated } = useAuth()
   const [errorMessage, setErrorMessage] = useState('')
   const [codeSnippet, setCodeSnippet] = useState('')
   const [analysisResult, setAnalysisResult] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [errorText, setErrorText] = useState('')
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
+
+  // Merkezi state temizleme helper: auth düşüşü veya unauthorized geçişinde
+  const resetAnalyzeState = useCallback(() => {
+    setErrorMessage('')
+    setCodeSnippet('')
+    setAnalysisResult(null)
+    setIsLoading(false)
+    setErrorText('')
+    setLoadingMessageIndex(0)
+  }, [])
 
   useEffect(() => {
     if (!isLoading) {
@@ -112,6 +124,14 @@ function AnalyzePage() {
 
     return () => window.clearInterval(interval)
   }, [isLoading])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      return
+    }
+
+    resetAnalyzeState()
+  }, [isAuthenticated, resetAnalyzeState])
 
   const handleSubmit = async (event) => {
     event.preventDefault()

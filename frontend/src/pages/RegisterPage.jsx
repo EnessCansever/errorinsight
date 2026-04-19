@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 
@@ -45,6 +45,16 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4 py-12 dark:bg-slate-950 sm:px-6 lg:px-8">
       <div className="w-full max-w-sm space-y-8">
+        <div className="flex items-center justify-between border-b border-slate-200/80 pb-3 dark:border-slate-800/80">
+          <span className="text-sm font-semibold tracking-wide text-slate-700 dark:text-slate-200">Fixora</span>
+          <Link
+            to="/"
+            className="text-sm font-medium text-[#6366F1] transition hover:text-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/40"
+          >
+            Ana Sayfaya Dön
+          </Link>
+        </div>
+
         <div className="text-center">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Kayıt Ol</h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">

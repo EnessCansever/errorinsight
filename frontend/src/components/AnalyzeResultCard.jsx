@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
@@ -32,6 +32,13 @@ function getCategoryLabel(category) {
 function AnalyzeResultCard({ result }) {
   const [copied, setCopied] = useState(false)
   const [isSendingFeedback, setIsSendingFeedback] = useState(false)
+  const [selectedFeedback, setSelectedFeedback] = useState('')
+  const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false)
+
+  useEffect(() => {
+    setSelectedFeedback('')
+    setIsFeedbackSubmitted(false)
+  }, [result.historyId])
 
   const copyCode = async () => {
     if (!result.exampleFixCode) {
@@ -58,10 +65,16 @@ function AnalyzeResultCard({ result }) {
       return
     }
 
+    if (isFeedbackSubmitted) {
+      return
+    }
+
     setIsSendingFeedback(true)
 
     try {
       await sendHistoryFeedback(result.historyId, feedbackType)
+      setSelectedFeedback(feedbackType)
+      setIsFeedbackSubmitted(true)
 
       if (feedbackType === 'positive') {
         toast.success('Geri bildiriminiz için teşekkürler.')
@@ -74,6 +87,18 @@ function AnalyzeResultCard({ result }) {
       setIsSendingFeedback(false)
     }
   }
+
+  const isFeedbackDisabled = isSendingFeedback || !result.historyId || isFeedbackSubmitted
+  const isPositiveSelected = selectedFeedback === 'positive'
+  const isNegativeSelected = selectedFeedback === 'negative'
+
+  const positiveButtonClass = isPositiveSelected
+    ? 'border-emerald-300 bg-emerald-100 text-emerald-800 dark:border-emerald-400/40 dark:bg-emerald-500/20 dark:text-emerald-200'
+    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
+
+  const negativeButtonClass = isNegativeSelected
+    ? 'border-rose-300 bg-rose-100 text-rose-800 dark:border-rose-400/40 dark:bg-rose-500/20 dark:text-rose-200'
+    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 md:p-6 dark:border-slate-800 dark:bg-slate-900">
@@ -184,16 +209,16 @@ function AnalyzeResultCard({ result }) {
               <button
                 type="button"
                 onClick={() => handleFeedback('positive')}
-                disabled={isSendingFeedback || !result.historyId}
-                className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                disabled={isFeedbackDisabled}
+                className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border px-3 py-1.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60 ${positiveButtonClass}`}
               >
                 👍
               </button>
               <button
                 type="button"
                 onClick={() => handleFeedback('negative')}
-                disabled={isSendingFeedback || !result.historyId}
-                className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                disabled={isFeedbackDisabled}
+                className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border px-3 py-1.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60 ${negativeButtonClass}`}
               >
                 👎
               </button>

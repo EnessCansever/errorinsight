@@ -3,10 +3,6 @@ import { Bars3Icon, MoonIcon, SunIcon, XMarkIcon } from '@heroicons/react/24/out
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-const publicLinks = [
-  { to: '/', label: 'Ana Sayfa' },
-]
-
 const privateLinks = [
   { to: '/analyze', label: 'Analiz' },
   { to: '/history', label: 'Geçmiş' },
@@ -38,7 +34,7 @@ function Navbar() {
     setIsMobileMenuOpen(false)
   }
 
-  const links = isAuthenticated ? [...publicLinks, ...privateLinks] : publicLinks
+  const links = isAuthenticated ? privateLinks : []
 
   const handleLogout = () => {
     logout()
@@ -51,9 +47,11 @@ function Navbar() {
       <nav className="mx-auto w-full max-w-6xl px-3 py-3 sm:px-4 sm:py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-2xl">Fixora</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Basit hata analizi demosu</p>
-        </div>
+            <NavLink to="/" className="inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35">
+              <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 sm:text-2xl">Fixora</h1>
+            </NavLink>
+            <p className="text-xs text-slate-500 dark:text-slate-400">AI destekli hata analizi</p>
+          </div>
 
         <div className="hidden items-center gap-2 md:flex">
           {!isAuthenticated && (

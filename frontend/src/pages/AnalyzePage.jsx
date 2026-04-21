@@ -1,4 +1,4 @@
-import { useCallback,useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import AnalyzeResultCard from '../components/AnalyzeResultCard'
 import ExampleErrorList from '../components/ExampleErrorList'
@@ -6,10 +6,10 @@ import { useAuth } from '../context/AuthContext'
 import { analyzeErrorMessage } from '../services/analyzeApi'
 
 const LOADING_MESSAGES = [
-  'Hata mesajı inceleniyor...',
-  'Muhtemel nedenler çıkarılıyor...',
+  'Hata mesajı analiz ediliyor...',
+  'Olası nedenler çıkarılıyor...',
   'Çözüm adımları hazırlanıyor...',
-  'Fixora sonucu son kez düzenliyor...',
+  'Örnek fix kodu oluşturuluyor...',
 ]
 
 function AnalyzeLoadingSkeleton() {
@@ -81,7 +81,7 @@ function StagedLoadingMessage({ message, step }) {
       </div>
       <p className="mt-2 text-sm font-semibold text-indigo-900 dark:text-indigo-200">{message}</p>
       <p className="mt-1 text-xs text-indigo-700 dark:text-indigo-300">
-        Adim {step} / {LOADING_MESSAGES.length}
+        Adım {step} / {LOADING_MESSAGES.length}
       </p>
     </div>
   )
@@ -96,7 +96,6 @@ function AnalyzePage() {
   const [errorText, setErrorText] = useState('')
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
 
-  // Merkezi state temizleme helper: auth düşüşü veya unauthorized geçişinde
   const resetAnalyzeState = useCallback(() => {
     setErrorMessage('')
     setCodeSnippet('')
@@ -201,7 +200,7 @@ function AnalyzePage() {
 
         <div className="space-y-1">
           <label htmlFor="codeSnippet" className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            Kod Parçası <span className="text-slate-400 font-medium">(isteğe bağlı)</span>
+            Kod Parçası <span className="font-medium text-slate-400">(isteğe bağlı)</span>
           </label>
           <textarea
             id="codeSnippet"

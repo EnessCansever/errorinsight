@@ -43,7 +43,7 @@ function HomePage() {
     <section className="space-y-10 pb-2 sm:space-y-12 md:space-y-14 md:pb-4">
       <header className="space-y-5 sm:space-y-6">
         <div className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-[#6366F1] dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300">
-          Fixora • Hata Analizi
+          Fixora • AI destekli hata analizi
         </div>
 
         <div className="space-y-4">
@@ -71,9 +71,16 @@ function HomePage() {
           </Link>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-          <span className="rounded-md bg-slate-100 px-2 py-1 dark:bg-slate-800">Geliştiriciler için üretildi</span>
-          <span className="rounded-md bg-slate-100 px-2 py-1 dark:bg-slate-800">Açık kaynak yaklaşımıyla geliştiriliyor</span>
+        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+            Gerçek zamanlı analiz
+          </span>
+          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+            7/24 erişim
+          </span>
+          <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+            Analiz geçmişi
+          </span>
         </div>
       </header>
 
@@ -81,7 +88,10 @@ function HomePage() {
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Nasıl Çalışır?</h2>
         <div className="grid gap-4 md:grid-cols-3">
           {howItWorks.map((item, index) => (
-            <article key={item.title} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+            <article
+              key={item.title}
+              className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+            >
               <div className="mb-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-[#6366F1] dark:bg-indigo-500/20 dark:text-indigo-300">
                 {index + 1}
               </div>
@@ -96,7 +106,10 @@ function HomePage() {
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Öne Çıkan Özellikler</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {featureCards.map((feature) => (
-            <article key={feature.title} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+            <article
+              key={feature.title}
+              className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+            >
               <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{feature.title}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{feature.description}</p>
             </article>
@@ -105,22 +118,34 @@ function HomePage() {
       </section>
 
       <section className="space-y-5">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Mini Demo</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Örnek Analiz Akışı</h2>
         <div className="grid min-w-0 gap-4 lg:grid-cols-2">
           <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Girdi</p>
-            <h3 className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">Örnek Hata Mesajı</h3>
-            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-sm wrap-break-word text-slate-700 sm:p-3 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              Girdi
+            </p>
+            <h3 className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+              Örnek Hata Mesajı
+            </h3>
+            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5 break-words text-sm text-slate-700 sm:p-3 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
               Uncaught TypeError: Cannot read properties of undefined (reading 'map')
             </div>
 
-            <h3 className="mt-4 text-sm font-semibold text-slate-900 dark:text-slate-100">Soruna Neden Olan Kod</h3>
+            <h3 className="mt-4 text-sm font-semibold text-slate-900 dark:text-slate-100">
+              Soruna Neden Olan Kod
+            </h3>
             <div className="mt-2 overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
               <div className="min-w-0 dark:hidden">
                 <SyntaxHighlighter
                   language="javascript"
                   style={oneLight}
-                  customStyle={{ margin: 0, padding: '12px', fontSize: '11px', background: '#f8fafc', minWidth: 'max-content' }}
+                  customStyle={{
+                    margin: 0,
+                    padding: '12px',
+                    fontSize: '11px',
+                    background: '#f8fafc',
+                    minWidth: 'max-content',
+                  }}
                   showLineNumbers
                 >
                   {demoCode}
@@ -130,7 +155,13 @@ function HomePage() {
                 <SyntaxHighlighter
                   language="javascript"
                   style={oneDark}
-                  customStyle={{ margin: 0, padding: '12px', fontSize: '11px', background: '#0f172a', minWidth: 'max-content' }}
+                  customStyle={{
+                    margin: 0,
+                    padding: '12px',
+                    fontSize: '11px',
+                    background: '#0f172a',
+                    minWidth: 'max-content',
+                  }}
                   showLineNumbers
                 >
                   {demoCode}
@@ -143,14 +174,18 @@ function HomePage() {
             <p className="text-xs font-semibold uppercase tracking-wide text-[#6366F1]">Fixora Çıktısı</p>
             <div className="mt-3 space-y-3">
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Kısa Özet</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  Kısa Özet
+                </p>
                 <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
                   users değişkeni beklenen anda dizi değil veya tanımsız olduğu için map çağrısı hata veriyor.
                 </p>
               </div>
 
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Muhtemel Nedenler</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  Muhtemel Nedenler
+                </p>
                 <ul className="mt-2 space-y-1 text-sm text-slate-700 dark:text-slate-300">
                   <li>• API cevabı beklenenden geç geliyor.</li>
                   <li>• users state ilk render’da undefined olabilir.</li>
@@ -158,7 +193,9 @@ function HomePage() {
               </div>
 
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Çözüm</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  Çözüm
+                </p>
                 <ol className="mt-2 space-y-1 text-sm text-slate-700 dark:text-slate-300">
                   <li>1. users için başlangıç değeri olarak boş dizi kullan.</li>
                   <li>2. map çağrısı öncesi Array.isArray(users) kontrolü ekle.</li>
@@ -173,7 +210,9 @@ function HomePage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-bold text-slate-900 sm:text-2xl dark:text-slate-100">Hemen Başla</h2>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">İlk hatanı şimdi analiz et ve çözüm yolunu netleştir.</p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              İlk hatanı şimdi analiz et ve çözüm yolunu netleştir.
+            </p>
           </div>
           <Link
             to="/analyze"

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { deleteHistory, getHistoryDetail, getHistoryList } from '../services/historyApi'
 
@@ -218,7 +219,16 @@ function HistoryPage() {
           )}
 
           {!isListLoading && historyItems.length === 0 && (
-            <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Henüz kayıtlı analiz bulunmuyor.</p>
+            <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Henüz analiz geçmişin yok.</p>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">İlk hatanı analiz ederek başlayabilirsin.</p>
+              <Link
+                to="/analyze"
+                className="mt-3 inline-flex min-h-10 items-center justify-center rounded-lg bg-[#6366F1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
+              >
+                Analiz Et
+              </Link>
+            </div>
           )}
 
           {!isListLoading && historyItems.length > 0 && (

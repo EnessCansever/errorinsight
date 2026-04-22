@@ -1,4 +1,8 @@
 const History = require('../models/History')
+const crypto = require('crypto')
+const { loadEnvConfig } = require('../config/env')
+
+const env = loadEnvConfig()
 
 const DEFAULT_HISTORY_PAGE = 1
 const DEFAULT_HISTORY_LIMIT = 8
@@ -16,6 +20,42 @@ const allowedCategories = new Set([
 ])
 
 const allowedSorts = new Set(['newest', 'oldest'])
+const SHARE_SLUG_BYTES = 9
+const SHARE_SLUG_MAX_ATTEMPTS = 5
+
+function getFrontendBaseUrl() {
+  if (Array.isArray(env.frontendOrigins) && env.frontendOrigins.length > 0) {
+    return env.frontendOrigins[0]
+  }
+
+  if (env.nodeEnv === 'production') {
+    return 'https://getfixora.dev'
+  }
+
+  return 'http://localhost:5173'
+}
+
+function buildShareUrl(slug) {
+  const baseUrl = getFrontendBaseUrl().replace(/\/+$/, '')
+  return `${baseUrl}/share/${slug}`
+}
+
+function generateShareSlug() {
+  return crypto.randomBytes(SHARE_SLUG_BYTES).toString('base64url')
+}
+
+async function createUniqueShareSlug() {
+  for (let attempt = 0; attempt < SHARE_SLUG_MAX_ATTEMPTS; attempt += 1) {
+    const slug = generateShareSlug()
+    const existingRecord = await History.findOne({ shareSlug: slug }).select('_id').lean()
+
+    if (!existingRecord) {
+      return slug
+    }
+  }
+
+  return null
+}
 
 function parsePositiveInteger(value, fallbackValue) {
   const parsedValue = Number.parseInt(value, 10)
@@ -224,9 +264,100 @@ async function submitHistoryFeedback(req, res) {
   }
 }
 
+async function shareHistoryById(req, res) {
+  try {
+    const { id } = req.params
+
+    const historyItem = await History.findOne({
+      _id: id,
+      user: req.user.id,
+    }).select('_id isShared shareSlug')
+
+    if (!historyItem) {
+      return res.status(404).json({
+        success: false,
+        error: 'Paylaşılacak geçmiş kaydı bulunamadı.',
+      })
+    }
+
+    if (historyItem.isShared && historyItem.shareSlug) {
+      return res.json({
+        success: true,
+        data: {
+          shareUrl: buildShareUrl(historyItem.shareSlug),
+        },
+      })
+    }
+
+    const shareSlug = await createUniqueShareSlug()
+
+    if (!shareSlug) {
+      return res.status(500).json({
+        success: false,
+        error: 'Paylaşım linki oluşturulamadı. Lütfen tekrar deneyin.',
+      })
+    }
+
+    historyItem.isShared = true
+    historyItem.shareSlug = shareSlug
+    await historyItem.save()
+
+    return res.json({
+      success: true,
+      data: {
+        shareUrl: buildShareUrl(shareSlug),
+      },
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Paylaşım linki oluşturulamadı.',
+    })
+  }
+}
+
+async function getPublicSharedHistory(req, res) {
+  try {
+    const slug = String(req.params.slug || '').trim()
+
+    if (!slug || slug.length > 64) {
+      return res.status(404).json({
+        success: false,
+        error: 'Paylaşılan analiz bulunamadı.',
+      })
+    }
+
+    const sharedItem = await History.findOne({
+      shareSlug: slug,
+      isShared: true,
+    })
+      .select('category shortSummary errorMessage codeSnippet createdAt')
+      .lean()
+
+    if (!sharedItem) {
+      return res.status(404).json({
+        success: false,
+        error: 'Paylaşılan analiz bulunamadı.',
+      })
+    }
+
+    return res.json({
+      success: true,
+      data: sharedItem,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Paylaşılan analiz alınamadı.',
+    })
+  }
+}
+
 module.exports = {
   getHistory,
   getHistoryById,
   deleteHistoryById,
   submitHistoryFeedback,
+  shareHistoryById,
+  getPublicSharedHistory,
 }

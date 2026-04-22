@@ -2,11 +2,28 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { deleteHistory, getHistoryDetail, getHistoryList } from '../services/historyApi'
+import { createHistoryShareLink, deleteHistory, getHistoryDetail, getHistoryList } from '../services/historyApi'
 
 const HISTORY_PAGE_LIMIT = 8
 const SEARCH_DEBOUNCE_MS = 300
 const SEARCH_MAX_LENGTH = 120
+
+async function copyTextToClipboard(value) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(value)
+    return
+  }
+
+  const helperTextArea = document.createElement('textarea')
+  helperTextArea.value = value
+  helperTextArea.setAttribute('readonly', '')
+  helperTextArea.style.position = 'absolute'
+  helperTextArea.style.left = '-9999px'
+  document.body.appendChild(helperTextArea)
+  helperTextArea.select()
+  document.execCommand('copy')
+  document.body.removeChild(helperTextArea)
+}
 
 function formatDate(value) {
   try {
@@ -43,6 +60,7 @@ function HistoryPage() {
   const [isListLoading, setIsListLoading] = useState(true)
   const [isDetailLoading, setIsDetailLoading] = useState(false)
   const [deletingId, setDeletingId] = useState('')
+  const [sharingId, setSharingId] = useState('')
   const [listError, setListError] = useState('')
   const [detailError, setDetailError] = useState('')
   const [searchInput, setSearchInput] = useState('')
@@ -76,6 +94,7 @@ function HistoryPage() {
     setIsListLoading(false)
     setIsDetailLoading(false)
     setDeletingId('')
+    setSharingId('')
     setSearchInput('')
     setAppliedSearch('')
     setSelectedCategory('')
@@ -290,6 +309,31 @@ function HistoryPage() {
       toast.error(message)
     } finally {
       setDeletingId('')
+    }
+  }
+
+  const handleShare = async () => {
+    if (!isAuthenticated || !selectedId) {
+      return
+    }
+
+    setSharingId(selectedId)
+
+    try {
+      const response = await createHistoryShareLink(selectedId)
+      const shareUrl = response?.shareUrl
+
+      if (!shareUrl) {
+        throw new Error('Paylaşım linki oluşturulamadı.')
+      }
+
+      await copyTextToClipboard(shareUrl)
+      toast.success('Paylaşım linki kopyalandı.')
+    } catch (error) {
+      const message = error?.message || 'Paylaşım linki oluşturulamadı.'
+      toast.error(message)
+    } finally {
+      setSharingId('')
     }
   }
 
@@ -543,6 +587,17 @@ function HistoryPage() {
               <div>
                 <p className="font-semibold text-slate-900 dark:text-slate-100">Oluşturma Zamanı</p>
                 <p className="wrap-break-word text-slate-700 dark:text-slate-300">{formatDate(selectedDetail.createdAt)}</p>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  disabled={!selectedId || sharingId === selectedId}
+                  className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[#6366F1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {sharingId === selectedId ? 'Paylaşım hazırlanıyor...' : 'Paylaşım Linki Oluştur'}
+                </button>
               </div>
             </div>
           )}

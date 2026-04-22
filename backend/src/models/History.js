@@ -52,6 +52,18 @@ const historySchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    isShared: {
+      type: Boolean,
+      default: false,
+    },
+    shareSlug: {
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
+      index: true,
+      default: undefined,
+    },
   },
   {
     timestamps: true,

@@ -96,3 +96,37 @@ export async function sendHistoryFeedback(id, feedbackType) {
 
   return result.data
 }
+
+export async function createHistoryShareLink(id) {
+  const result = await requestJson(
+    buildApiUrl(`/history/${id}/share`),
+    {
+      method: 'POST',
+      headers: {
+        ...getAuthHeaders(),
+      },
+    },
+    'Paylaşım linki oluşturulamadı.',
+    {
+      authErrorMessage: HISTORY_AUTH_ERROR_MESSAGE,
+      emitUnauthorizedEvent: true,
+    },
+  )
+
+  return result.data
+}
+
+export async function getPublicSharedHistory(slug) {
+  const result = await requestJson(
+    buildApiUrl(`/public/history/${slug}`),
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+    'Paylaşılan analiz alınamadı.',
+  )
+
+  return result.data
+}

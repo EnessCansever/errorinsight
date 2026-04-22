@@ -353,6 +353,27 @@ async function getPublicSharedHistory(req, res) {
   }
 }
 
+async function deleteAllHistory(req, res) {
+  try {
+    const result = await History.deleteMany({
+      user: req.user.id,
+    })
+
+    return res.json({
+      success: true,
+      message: 'Tüm geçmiş kayıtları silindi.',
+      data: {
+        deletedCount: result.deletedCount || 0,
+      },
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Geçmiş kayıtları silinemedi.',
+    })
+  }
+}
+
 module.exports = {
   getHistory,
   getHistoryById,
@@ -360,4 +381,5 @@ module.exports = {
   submitHistoryFeedback,
   shareHistoryById,
   getPublicSharedHistory,
+  deleteAllHistory,
 }

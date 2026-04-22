@@ -130,3 +130,22 @@ export async function getPublicSharedHistory(slug) {
 
   return result.data
 }
+
+export async function deleteAllHistory() {
+  const result = await requestJson(
+    buildApiUrl('/history'),
+    {
+      method: 'DELETE',
+      headers: {
+        ...getAuthHeaders(),
+      },
+    },
+    'Geçmiş kayıtları silinemedi.',
+    {
+      authErrorMessage: HISTORY_AUTH_ERROR_MESSAGE,
+      emitUnauthorizedEvent: true,
+    },
+  )
+
+  return result.data
+}

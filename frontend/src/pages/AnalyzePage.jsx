@@ -161,7 +161,7 @@ function AnalyzePage() {
         codeSnippet: trimmedCodeSnippet || undefined,
       })
       setAnalysisResult(result)
-      toast.success('Analiz tamamlandı.')
+      toast.success('Analiz kaydedildi. Geçmişten tekrar erişebilirsin.')
 
       // Benzer hatalar arat
       setIsSimilarLoading(true)
@@ -267,6 +267,18 @@ function AnalyzePage() {
 
       {!isLoading && !errorText && analysisResult && (
         <>
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 px-4 py-3 dark:border-emerald-500/25 dark:bg-emerald-500/10">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-emerald-900 dark:text-emerald-200">Bu analiz hesabına kaydedildi.</p>
+              <Link
+                to="/history"
+                className="inline-flex min-h-8 items-center justify-center rounded-md border border-emerald-300 bg-white/70 px-3 py-1.5 text-xs font-medium text-emerald-800 transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/40 dark:border-emerald-400/40 dark:bg-emerald-500/10 dark:text-emerald-200 dark:hover:bg-emerald-500/20"
+              >
+                Geçmişe Git
+              </Link>
+            </div>
+          </div>
+
           <AnalyzeResultCard result={analysisResult} />
 
           {(isSimilarLoading || similarItems.length > 0) && (

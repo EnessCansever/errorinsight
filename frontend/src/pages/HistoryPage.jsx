@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { deleteHistory, getHistoryDetail, getHistoryList } from '../services/historyApi'
+
+const HISTORY_PAGE_LIMIT = 8
+const SEARCH_DEBOUNCE_MS = 300
+const SEARCH_MAX_LENGTH = 120
 
 function formatDate(value) {
   try {
@@ -26,6 +30,11 @@ function getCategoryLabel(category) {
   return categoryLabels[category] || category
 }
 
+const categoryOptions = [
+  { value: '', label: 'Tüm Kategoriler' },
+  ...Object.entries(categoryLabels).map(([value, label]) => ({ value, label })),
+]
+
 function HistoryPage() {
   const { isAuthenticated } = useAuth()
   const [historyItems, setHistoryItems] = useState([])
@@ -36,6 +45,26 @@ function HistoryPage() {
   const [deletingId, setDeletingId] = useState('')
   const [listError, setListError] = useState('')
   const [detailError, setDetailError] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [appliedSearch, setAppliedSearch] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [sortOrder, setSortOrder] = useState('newest')
+  const [page, setPage] = useState(1)
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: HISTORY_PAGE_LIMIT,
+    totalItems: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+  })
+
+  const selectedIdRef = useRef('')
+  const skipNextFetchRef = useRef(null)
+
+  useEffect(() => {
+    selectedIdRef.current = selectedId
+  }, [selectedId])
 
   // Merkezi state temizleme helper: auth düşüşü veya unauthorized geçişinde
   const resetHistoryState = useCallback(() => {
@@ -47,6 +76,19 @@ function HistoryPage() {
     setIsListLoading(false)
     setIsDetailLoading(false)
     setDeletingId('')
+    setSearchInput('')
+    setAppliedSearch('')
+    setSelectedCategory('')
+    setSortOrder('newest')
+    setPage(1)
+    setPagination({
+      page: 1,
+      limit: HISTORY_PAGE_LIMIT,
+      totalItems: 0,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPrevPage: false,
+    })
   }, [])
 
   const fetchHistory = useCallback(async () => {
@@ -55,23 +97,57 @@ function HistoryPage() {
       return
     }
 
+    if (skipNextFetchRef.current === page) {
+      skipNextFetchRef.current = null
+      return
+    }
+
     setIsListLoading(true)
     setListError('')
 
     try {
-      const data = await getHistoryList()
-      setHistoryItems(data)
+      const response = await getHistoryList({
+        page,
+        limit: HISTORY_PAGE_LIMIT,
+        search: appliedSearch,
+        category: selectedCategory,
+        sort: sortOrder,
+      })
 
-      if (data.length === 0) {
+      const items = response?.items || []
+      const nextPagination = response?.pagination || {
+        page,
+        limit: HISTORY_PAGE_LIMIT,
+        totalItems: 0,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPrevPage: false,
+      }
+
+      setDetailError('')
+      setHistoryItems(items)
+      setPagination(nextPagination)
+
+      if (nextPagination.page !== page) {
+        skipNextFetchRef.current = nextPagination.page
+        setPage(nextPagination.page)
+      }
+
+      if (items.length === 0) {
         setSelectedId('')
         setSelectedDetail(null)
         return
       }
 
-      setSelectedId((prevSelectedId) => {
-        const hasPreviousSelection = data.some((item) => item._id === prevSelectedId)
-        return hasPreviousSelection ? prevSelectedId : data[0]._id
-      })
+      const currentSelectedId = selectedIdRef.current
+      const hasPreviousSelection = items.some((item) => item._id === currentSelectedId)
+      const nextSelectedId = hasPreviousSelection ? currentSelectedId : items[0]._id
+
+      if (nextSelectedId !== currentSelectedId) {
+        setSelectedDetail(null)
+      }
+
+      setSelectedId(nextSelectedId)
     } catch (error) {
       const message = error?.message || 'Geçmiş kayıtları alınamadı.'
       setListError(message)
@@ -81,11 +157,22 @@ function HistoryPage() {
     } finally {
       setIsListLoading(false)
     }
-  }, [isAuthenticated, resetHistoryState])
+  }, [isAuthenticated, resetHistoryState, page, appliedSearch, selectedCategory, sortOrder])
 
   useEffect(() => {
     fetchHistory()
   }, [fetchHistory])
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setAppliedSearch(searchInput.trim())
+      setPage(1)
+    }, SEARCH_DEBOUNCE_MS)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [searchInput])
 
   // Auth düşüşünde sayfanın tüm state'i temizle (stale content gösterilmesin)
   useEffect(() => {
@@ -136,6 +223,46 @@ function HistoryPage() {
     }
   }, [isAuthenticated, selectedId])
 
+  const hasActiveFilters =
+    searchInput.trim().length > 0 || selectedCategory.length > 0 || sortOrder !== 'newest'
+
+  const isFilteredEmpty = !isListLoading && pagination.totalItems === 0 && hasActiveFilters
+  const isInitialEmpty = !isListLoading && pagination.totalItems === 0 && !hasActiveFilters
+
+  const clearFilters = () => {
+    setSearchInput('')
+    setAppliedSearch('')
+    setSelectedCategory('')
+    setSortOrder('newest')
+    setPage(1)
+  }
+
+  const handleSearchChange = (event) => {
+    setSearchInput(event.target.value)
+  }
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value)
+    setPage(1)
+  }
+
+  const handleSortChange = (event) => {
+    setSortOrder(event.target.value)
+    setPage(1)
+  }
+
+  const handlePreviousPage = () => {
+    setPage((currentPage) => Math.max(1, currentPage - 1))
+  }
+
+  const handleNextPage = () => {
+    if (!pagination.hasNextPage) {
+      return
+    }
+
+    setPage((currentPage) => currentPage + 1)
+  }
+
   const handleDelete = async (itemId) => {
     if (!isAuthenticated) {
       return
@@ -154,18 +281,9 @@ function HistoryPage() {
     try {
       await deleteHistory(itemId)
       toast.success('Kayıt silindi.')
-
-      const updatedItems = historyItems.filter((item) => item._id !== itemId)
-      setHistoryItems(updatedItems)
-
-      if (selectedId === itemId) {
-        if (updatedItems.length > 0) {
-          setSelectedId(updatedItems[0]._id)
-        } else {
-          setSelectedId('')
-          setSelectedDetail(null)
-        }
-      }
+      setSelectedDetail(null)
+      setDetailError('')
+      await fetchHistory()
     } catch (error) {
       const message = error.message || 'Kayıt silinemedi.'
       setListError(message)
@@ -209,16 +327,98 @@ function HistoryPage() {
 
       <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-3 sm:p-4 dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Son Analizler</h3>
-            <span className="text-xs text-slate-500 dark:text-slate-400">{historyItems.length} kayıt</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Son Analizler</h3>
+              <span className="text-xs text-slate-500 dark:text-slate-400">{pagination.totalItems} kayıt</span>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-950/60">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="sm:col-span-3">
+                  <label htmlFor="historySearch" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Arama
+                  </label>
+                  <input
+                    id="historySearch"
+                    type="search"
+                    maxLength={SEARCH_MAX_LENGTH}
+                    value={searchInput}
+                    onChange={handleSearchChange}
+                    placeholder="Hata mesajı, kısa özet veya kategori ara"
+                    className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
+                  />
+                  <p className="mt-1 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+                    En fazla {SEARCH_MAX_LENGTH} karakter.
+                  </p>
+                </div>
+
+                <div>
+                  <label htmlFor="historyCategory" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Kategori
+                  </label>
+                  <select
+                    id="historyCategory"
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  >
+                    {categoryOptions.map((option) => (
+                      <option key={option.value || 'all'} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="historySort" className="block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Sıralama
+                  </label>
+                  <select
+                    id="historySort"
+                    value={sortOrder}
+                    onChange={handleSortChange}
+                    className="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  >
+                    <option value="newest">En yeni</option>
+                    <option value="oldest">En eski</option>
+                  </select>
+                </div>
+
+                <div className="flex items-end sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    disabled={!hasActiveFilters}
+                    className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#6366F1]/35 hover:text-[#6366F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-indigo-300"
+                  >
+                    Filtreleri Temizle
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           {isListLoading && (
             <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Geçmiş yükleniyor...</p>
           )}
 
-          {!isListLoading && historyItems.length === 0 && (
+          {isFilteredEmpty && (
+            <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Arama ya da filtrelerle eşleşen kayıt bulunamadı.</p>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Arama terimini, kategoriyi veya sıralamayı değiştirerek tekrar deneyebilirsin.</p>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="mt-3 inline-flex min-h-10 items-center justify-center rounded-lg bg-[#6366F1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
+              >
+                Filtreleri Temizle
+              </button>
+            </div>
+          )}
+
+          {isInitialEmpty && (
             <div className="mt-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Henüz analiz geçmişin yok.</p>
               <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">İlk hatanı analiz ederek başlayabilirsin.</p>
@@ -250,7 +450,7 @@ function HistoryPage() {
                         }`}
                       >
                         <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
-                          {item.category}
+                          {getCategoryLabel(item.category)}
                         </p>
                         <p className="mt-1 line-clamp-2 wrap-break-word text-sm font-medium">
                           {item.errorMessage}
@@ -271,6 +471,33 @@ function HistoryPage() {
                 )
               })}
             </ul>
+          )}
+
+          {!isListLoading && pagination.totalItems > 0 && (
+            <div className="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Sayfa {pagination.page} / {pagination.totalPages || 1}
+              </p>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePreviousPage}
+                  disabled={!pagination.hasPrevPage || isListLoading}
+                  className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  Önceki
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextPage}
+                  disabled={!pagination.hasNextPage || isListLoading}
+                  className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[#6366F1] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Sonraki
+                </button>
+              </div>
+            </div>
           )}
         </section>
 

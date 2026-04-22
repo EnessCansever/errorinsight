@@ -3,9 +3,25 @@ import { getAuthHeaders, requestJson } from './authApi'
 
 const HISTORY_AUTH_ERROR_MESSAGE = 'Oturumunuzun süresi doldu. Geçmişe erişmek için tekrar giriş yapın.'
 
-export async function getHistoryList() {
+function buildQueryString(params = {}) {
+  const searchParams = new URLSearchParams()
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') {
+      return
+    }
+
+    searchParams.set(key, String(value))
+  })
+
+  const queryString = searchParams.toString()
+
+  return queryString ? `?${queryString}` : ''
+}
+
+export async function getHistoryList(params = {}) {
   const result = await requestJson(
-    buildApiUrl('/history'),
+    buildApiUrl(`/history${buildQueryString(params)}`),
     {
       method: 'GET',
       headers: {

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { Link } from 'react-router-dom'
 import AnalyzeResultCard from '../components/AnalyzeResultCard'
 import ExampleErrorList from '../components/ExampleErrorList'
 import { useAuth } from '../context/AuthContext'
 import { analyzeErrorMessage } from '../services/analyzeApi'
+import { getSimilarHistory } from '../services/historyApi'
 
 const LOADING_MESSAGES = [
   'Hata mesajı analiz ediliyor...',
@@ -95,6 +97,8 @@ function AnalyzePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [errorText, setErrorText] = useState('')
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
+  const [similarItems, setSimilarItems] = useState([])
+  const [isSimilarLoading, setIsSimilarLoading] = useState(false)
 
   const resetAnalyzeState = useCallback(() => {
     setErrorMessage('')
@@ -103,6 +107,8 @@ function AnalyzePage() {
     setIsLoading(false)
     setErrorText('')
     setLoadingMessageIndex(0)
+    setSimilarItems([])
+    setIsSimilarLoading(false)
   }, [])
 
   useEffect(() => {
@@ -136,6 +142,7 @@ function AnalyzePage() {
     event.preventDefault()
     setErrorText('')
     setAnalysisResult(null)
+    setSimilarItems([])
 
     const trimmedErrorMessage = errorMessage.trim()
     const trimmedCodeSnippet = codeSnippet.trim()
@@ -155,6 +162,18 @@ function AnalyzePage() {
       })
       setAnalysisResult(result)
       toast.success('Analiz tamamlandı.')
+
+      // Benzer hatalar arat
+      setIsSimilarLoading(true)
+      try {
+        const similar = await getSimilarHistory(trimmedErrorMessage)
+        setSimilarItems(Array.isArray(similar) ? similar : [])
+      } catch {
+        // Benzer hatalar arması başarısız olursa sessizce devam et
+        setSimilarItems([])
+      } finally {
+        setIsSimilarLoading(false)
+      }
     } catch (error) {
       const message = error?.message || 'Analiz yapılırken bir sorun oluştu. Lütfen tekrar deneyin.'
       setErrorText(message)
@@ -247,7 +266,52 @@ function AnalyzePage() {
       )}
 
       {!isLoading && !errorText && analysisResult && (
-        <AnalyzeResultCard result={analysisResult} />
+        <>
+          <AnalyzeResultCard result={analysisResult} />
+
+          {(isSimilarLoading || similarItems.length > 0) && (
+            <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Benzer Hatalar</h3>
+
+              {isSimilarLoading && (
+                <div className="text-center py-6">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Benzer hatalar aranıyor...</p>
+                </div>
+              )}
+
+              {!isSimilarLoading && similarItems.length > 0 && (
+                <div className="space-y-2">
+                  {similarItems.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-slate-50/50 p-3 dark:border-slate-700 dark:bg-slate-800/50 sm:flex-row sm:items-start sm:justify-between"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="inline-flex items-center rounded-full bg-indigo-100 px-2 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300">
+                            {item.category}
+                          </span>
+                        </div>
+                        <p className="mt-2 line-clamp-2 text-sm text-slate-700 dark:text-slate-300">
+                          {item.shortSummary}
+                        </p>
+                      </div>
+
+                      {item.shareSlug && (
+                        <Link
+                          to={`/share/${item.shareSlug}`}
+                          className="mt-2 inline-flex min-h-8 items-center justify-center rounded-lg border border-indigo-300 bg-indigo-50/50 px-3 py-1.5 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 hover:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/35 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20 dark:hover:border-indigo-500/60 sm:mt-0 sm:shrink-0"
+                        >
+                          İncele
+                        </Link>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+        </>
       )}
     </section>
   )

@@ -149,3 +149,22 @@ export async function deleteAllHistory() {
 
   return result.data
 }
+
+export async function getSimilarHistory(query) {
+  const result = await requestJson(
+    buildApiUrl(`/history/similar${buildQueryString({ query })}`),
+    {
+      method: 'GET',
+      headers: {
+        ...getAuthHeaders(),
+      },
+    },
+    'Benzer hatalar alınamadı.',
+    {
+      authErrorMessage: HISTORY_AUTH_ERROR_MESSAGE,
+      emitUnauthorizedEvent: true,
+    },
+  )
+
+  return result.data
+}

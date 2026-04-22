@@ -8,10 +8,12 @@ const {
 	shareHistoryById,
 	getPublicSharedHistory,
 	deleteAllHistory,
+	getSimilarHistory,
 } = require('../controllers/historyController')
 
 const router = express.Router()
 
+router.get('/history/similar', requireAuth, getSimilarHistory)
 router.get('/history', requireAuth, getHistory)
 router.get('/history/:id', requireAuth, getHistoryById)
 router.delete('/history/:id', requireAuth, deleteHistoryById)

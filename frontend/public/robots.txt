@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /register
+Disallow: /analyze
+Disallow: /history
+
+Sitemap: https://getfixora.dev/sitemap.xml

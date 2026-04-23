@@ -16,9 +16,9 @@ const CATEGORY_LABELS = {
 }
 
 const FALLBACK_TITLE = 'Paylaşılan Analiz | Fixora'
-const FALLBACK_DESCRIPTION = 'Fixora ile paylaşılan bir hata analizini görüntüle.'
-const NOT_FOUND_DESCRIPTION = 'Paylaşılan analiz bulunamadı.'
-const UNAVAILABLE_DESCRIPTION = 'Paylaşılan analiz şu anda yüklenemiyor.'
+const FALLBACK_DESCRIPTION = 'Fixora üzerinde paylaşılan hata analizini görüntüleyin.'
+const NOT_FOUND_DESCRIPTION = 'Bu paylaşım bağlantısına ait analiz bulunamadı.'
+const UNAVAILABLE_DESCRIPTION = 'Paylaşılan analiz şu anda yüklenemiyor. Lütfen tekrar deneyin.'
 
 function getBackendApiBaseUrl() {
   const runtimeEnv = typeof process !== 'undefined' && process.env ? process.env : {}
@@ -50,7 +50,11 @@ function truncateText(value, maxLength) {
     return normalizedValue
   }
 
-  return `${normalizedValue.slice(0, maxLength - 1).trimEnd()}…`
+  const safeSlice = normalizedValue.slice(0, maxLength - 1).trimEnd()
+  const lastSpaceIndex = safeSlice.lastIndexOf(' ')
+  const cutIndex = lastSpaceIndex >= Math.floor(maxLength * 0.55) ? lastSpaceIndex : safeSlice.length
+
+  return `${safeSlice.slice(0, cutIndex).trimEnd()}…`
 }
 
 function getCategoryLabel(category) {
@@ -61,22 +65,18 @@ function buildMetadata(analysis, slug) {
   const normalizedSlug = normalizeText(slug)
   const canonicalUrl = normalizedSlug ? `${SITE_ORIGIN}/share/${normalizedSlug}` : `${SITE_ORIGIN}/share/`
   const category = getCategoryLabel(analysis?.category)
-  const shortSummary = truncateText(analysis?.shortSummary, 80)
+  const shortSummary = truncateText(analysis?.shortSummary, 72)
   const errorMessage = truncateText(analysis?.errorMessage, 140)
 
   const titleBase = shortSummary ? `${category}: ${shortSummary}` : category
-  const title = truncateText(`${titleBase} | ${SITE_NAME}`, 70) || FALLBACK_TITLE
-  const descriptionSource = errorMessage || shortSummary || FALLBACK_DESCRIPTION
+  const title = truncateText(`${titleBase} | ${SITE_NAME}`, 62) || FALLBACK_TITLE
+  const descriptionSource = shortSummary || errorMessage || FALLBACK_DESCRIPTION
 
   return {
     title,
     description: truncateText(descriptionSource, 160) || FALLBACK_DESCRIPTION,
     canonicalUrl,
   }
-}
-
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 function replaceTag(html, pattern, replacement) {

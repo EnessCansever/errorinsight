@@ -105,9 +105,49 @@ const fallbackResponses = {
   },
 }
 
+function buildSeoContentFallback(shortSummary, errorMessage, category) {
+  const summaryText = typeof shortSummary === 'string' ? shortSummary.trim() : ''
+  const errorText = typeof errorMessage === 'string' ? errorMessage.trim() : ''
+  const categoryText = typeof category === 'string' && category.trim() ? category.trim() : 'bu hata'
+
+  if (summaryText) {
+    return `${summaryText} Bu sorun genellikle ${categoryText.toLowerCase()} kategorisindeki bir uyumsuzluktan kaynaklanır. Kalıcı bir çözüm için veriyi doğrulayan koruyucu kontroller ekleyip ilgili kod akışını adım adım test etmeniz faydalı olur.`
+  }
+
+  if (errorText) {
+    const shortenedError = errorText.length > 120 ? `${errorText.slice(0, 120).trimEnd()}...` : errorText
+    return `${shortenedError} mesajı, uygulamanın beklenmeyen bir koşula girdiğini gösterir. Sorunun başladığı satırı ve o satıra gelen veriyi izleyerek kaynağı hızla daraltabilirsiniz. Tekrarını azaltmak için giriş doğrulaması ve güvenli kontrol adımları eklemek önemlidir.`
+  }
+
+  return 'Bu hata, uygulamanın beklenmeyen bir veri veya çalışma durumuyla karşılaştığını gösterir. Sorunun kaynağını bulmak için hatanın oluştuğu noktayı ve ilgili veri akışlarını adım adım inceleyin. Benzer problemlerin tekrarını azaltmak için doğrulama ve koruyucu kontroller ekleyin.'
+}
+
+function normalizeSentenceCount(value, fallbackValue) {
+  if (typeof value !== 'string') {
+    return fallbackValue
+  }
+
+  const normalized = value.replace(/\s+/g, ' ').trim()
+  if (!normalized) {
+    return fallbackValue
+  }
+
+  const sentences = normalized
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean)
+
+  if (sentences.length < 2) {
+    return fallbackValue
+  }
+
+  return sentences.slice(0, 4).join(' ')
+}
+
 function buildFallbackAnalysis(errorMessage, codeSnippet) {
   const category = categorizeError(errorMessage)
   const fallback = fallbackResponses[category] || fallbackResponses.Unknown
+  const seoContent = buildSeoContentFallback(fallback.shortSummary, errorMessage, category)
 
   return {
     category,
@@ -117,6 +157,7 @@ function buildFallbackAnalysis(errorMessage, codeSnippet) {
     solutionSteps: fallback.solutionSteps,
     exampleFixCode: fallback.exampleFixCode,
     notes: fallback.notes,
+    seoContent,
     inputError: errorMessage.slice(0, 100),
     codeProvided: Boolean(codeSnippet && codeSnippet.trim()),
     usedFallback: true,
@@ -162,13 +203,15 @@ Alanlar tam olarak su olsun:
   "possibleCauses": ["madde 1", "madde 2"],
   "solutionSteps": ["adim 1", "adim 2"],
   "exampleFixCode": "Kısa düzeltilmiş kod örneği",
-  "notes": "Dikkat edilmesi gerekenler"
+  "notes": "Dikkat edilmesi gerekenler",
+  "seoContent": "2-4 cümlelik, Türkçe, genel ama bu hataya özel kısa bilgi metni"
 }
 
 Kurallar:
 - possibleCauses ve solutionSteps dizi olsun.
 - exampleFixCode kisa olsun ve markdown code fence kullanma.
 - category yukarıdaki değerlerden biri olsun.
+- seoContent mutlaka Türkçe olsun, 2-4 cümle arasında kalsın, kısa ve doğal dille yazılsın.
 - Cevap Türkçe olsun ve yazım kurallarına uygun, doğal Türkçe karakterlerle yazılsın.
 `.trim()
 }
@@ -230,6 +273,7 @@ function extractPartialFromText(text) {
     solutionSteps: extractArray('solutionSteps'),
     exampleFixCode: extractString('exampleFixCode'),
     notes: extractString('notes'),
+    seoContent: extractString('seoContent'),
   }
 }
 
@@ -243,6 +287,7 @@ function hasUsableModelField(rawResult) {
     rawResult.turkishExplanation,
     rawResult.exampleFixCode,
     rawResult.notes,
+    rawResult.seoContent,
     Array.isArray(rawResult.possibleCauses) ? rawResult.possibleCauses.length : 0,
     Array.isArray(rawResult.solutionSteps) ? rawResult.solutionSteps.length : 0,
   ].some((value) => {
@@ -294,15 +339,21 @@ function normalizeCategoryValue(value, suggestedCategory) {
 function normalizeAnalysis(rawResult, errorMessage, codeSnippet) {
   const fallback = buildFallbackAnalysis(errorMessage, codeSnippet)
   const hasModelData = hasUsableModelField(rawResult)
+  const normalizedShortSummary = normalizeTextValue(rawResult.shortSummary, fallback.shortSummary)
+  const normalizedSeoContent = normalizeSentenceCount(
+    normalizeTextValue(rawResult.seoContent, ''),
+    fallback.seoContent,
+  )
 
   return {
     category: normalizeCategoryValue(rawResult.category, fallback.category),
-    shortSummary: normalizeTextValue(rawResult.shortSummary, fallback.shortSummary),
+    shortSummary: normalizedShortSummary,
     turkishExplanation: normalizeTextValue(rawResult.turkishExplanation, fallback.turkishExplanation),
     possibleCauses: normalizeArrayValue(rawResult.possibleCauses, fallback.possibleCauses),
     solutionSteps: normalizeArrayValue(rawResult.solutionSteps, fallback.solutionSteps),
     exampleFixCode: normalizeTextValue(rawResult.exampleFixCode, fallback.exampleFixCode),
     notes: normalizeTextValue(rawResult.notes, fallback.notes),
+    seoContent: normalizedSeoContent || buildSeoContentFallback(normalizedShortSummary, errorMessage, fallback.category),
     inputError: errorMessage.slice(0, 100),
     codeProvided: Boolean(codeSnippet && codeSnippet.trim()),
     usedFallback: !hasModelData,

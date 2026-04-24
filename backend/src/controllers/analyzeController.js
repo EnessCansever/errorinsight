@@ -28,7 +28,24 @@ function buildReusableAnalysis(historyRecord) {
     solutionSteps: Array.isArray(historyRecord.solutionSteps) ? historyRecord.solutionSteps : [],
     exampleFixCode: historyRecord.exampleFixCode || '',
     notes: historyRecord.notes,
+    seoContent: historyRecord.seoContent || '',
   }
+}
+
+function buildSeoContentFallback(shortSummary, errorMessage) {
+  const summaryText = typeof shortSummary === 'string' ? shortSummary.trim() : ''
+  const errorText = typeof errorMessage === 'string' ? errorMessage.trim() : ''
+
+  if (summaryText) {
+    return `${summaryText} Bu hata genellikle beklenmeyen veri veya akış uyumsuzluğu nedeniyle ortaya çıkar. Hatanın oluştuğu noktadaki veri tipini ve koşulları adım adım kontrol etmek çözüm sürecini hızlandırır. Benzer sorunları azaltmak için koruyucu kontroller ve açık durum yönetimi eklenmelidir.`
+  }
+
+  if (errorText) {
+    const shortenedError = errorText.length > 120 ? `${errorText.slice(0, 120).trimEnd()}...` : errorText
+    return `${shortenedError} mesajı, kodun beklenmeyen bir durumda çalıştığını gösterir. Sorunun kaynağını bulmak için hataya giden veri akışlarını ve ilgili satırdaki koşulları inceleyin. Kalıcı çözüm için giriş doğrulaması ve güvenli kontrol adımları ekleyin.`
+  }
+
+  return 'Bu hata, uygulamanın beklenmeyen bir veri veya çalışma durumuyla karşılaştığını gösterir. Sorunun kaynağını bulmak için ilgili kod akışını adım adım inceleyin. Benzer hataların tekrarını azaltmak için doğrulama ve koruyucu kontroller uygulayın.'
 }
 
 async function findReusableAnalysis(userId, errorMessage, codeSnippet) {
@@ -100,6 +117,16 @@ async function analyzeError(req, res) {
       analysis = await analyzeService.analyzeError(errorMessage, codeSnippet)
     }
 
+    const resolvedSeoContent =
+      typeof analysis.seoContent === 'string' && analysis.seoContent.trim()
+        ? analysis.seoContent.trim()
+        : buildSeoContentFallback(analysis.shortSummary, errorMessage)
+
+    analysis = {
+      ...analysis,
+      seoContent: resolvedSeoContent,
+    }
+
     let historyId = null
 
     // Analiz sonucu olusunca gecmise kaydet (kayit hatasi analiz akisini bozmaz)
@@ -115,6 +142,7 @@ async function analyzeError(req, res) {
         solutionSteps: Array.isArray(analysis.solutionSteps) ? analysis.solutionSteps : [],
         exampleFixCode: analysis.exampleFixCode || '',
         notes: analysis.notes || '',
+        seoContent: analysis.seoContent || '',
       })
 
       historyId = createdHistory._id?.toString() || null

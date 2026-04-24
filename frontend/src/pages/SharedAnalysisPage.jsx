@@ -62,6 +62,7 @@ function SharedAnalysisPage() {
     'Önce hata mesajındaki değişkeni, veri tipini ve ilgili satırdaki fonksiyon kullanımını kontrol edin.'
 
   const exampleFixCode = normalizeText(analysis?.exampleFixCode)
+  const seoContentText = normalizeText(analysis?.seoContent)
   const notesText = normalizeText(analysis?.notes)
 
   useEffect(() => {
@@ -232,6 +233,13 @@ function SharedAnalysisPage() {
                   </div>
                 )}
               </section>
+
+              {seoContentText && (
+                <section className="rounded-xl bg-slate-50 px-4 py-4 dark:bg-slate-800">
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Bu hata hakkında genel bilgi</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">{seoContentText}</p>
+                </section>
+              )}
 
               {notesText && (
                 <section className="rounded-xl bg-slate-50 px-4 py-4 dark:bg-slate-800">

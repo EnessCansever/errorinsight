@@ -44,6 +44,11 @@ const historySchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    seoContent: {
+      type: String,
+      default: '',
+      trim: true,
+    },
     positiveFeedbackCount: {
       type: Number,
       default: 0,

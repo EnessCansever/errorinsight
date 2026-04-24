@@ -331,7 +331,7 @@ async function getPublicSharedHistory(req, res) {
       shareSlug: slug,
       isShared: true,
     })
-      .select('category shortSummary errorMessage codeSnippet turkishExplanation possibleCauses solutionSteps exampleFixCode notes createdAt')
+      .select('category shortSummary errorMessage codeSnippet turkishExplanation possibleCauses solutionSteps exampleFixCode notes createdAt -_id')
       .lean()
 
     if (!sharedItem) {
@@ -361,7 +361,7 @@ async function getPublicSitemap(req, res) {
     })
       .sort({ updatedAt: -1, createdAt: -1 })
       .limit(1000)
-      .select('shareSlug updatedAt createdAt')
+      .select('shareSlug updatedAt createdAt -_id')
       .lean()
 
     return res.json({
@@ -431,6 +431,54 @@ async function getSimilarHistory(req, res) {
   }
 }
 
+async function getPublicSimilarHistory(req, res) {
+  try {
+    const rawQuery = typeof req.query.query === 'string' ? req.query.query.trim() : ''
+
+    if (!rawQuery) {
+      return res.status(400).json({
+        success: false,
+        error: 'Arama sorgusu boş olamaz.',
+      })
+    }
+
+    const searchQuery = rawQuery.substring(0, MAX_HISTORY_SEARCH_LENGTH)
+    const escapedSearchQuery = escapeRegex(searchQuery)
+    const excludeSlug = typeof req.query.excludeSlug === 'string'
+      ? req.query.excludeSlug.trim().substring(0, 64)
+      : ''
+
+    const slugExclusions = ['']
+
+    if (excludeSlug) {
+      slugExclusions.push(excludeSlug)
+    }
+
+    const similarItems = await History.find({
+      isShared: true,
+      shareSlug: { $exists: true, $nin: slugExclusions },
+      $or: [
+        { errorMessage: { $regex: escapedSearchQuery, $options: 'i' } },
+        { shortSummary: { $regex: escapedSearchQuery, $options: 'i' } },
+        { category: { $regex: escapedSearchQuery, $options: 'i' } },
+      ],
+    })
+      .select('category shortSummary shareSlug -_id')
+      .limit(3)
+      .lean()
+
+    return res.json({
+      success: true,
+      data: similarItems,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Benzer paylaşılan analizler alınamadı.',
+    })
+  }
+}
+
 module.exports = {
   getHistory,
   getHistoryById,
@@ -439,6 +487,7 @@ module.exports = {
   shareHistoryById,
   getPublicSharedHistory,
   getPublicSitemap,
+  getPublicSimilarHistory,
   deleteAllHistory,
   getSimilarHistory,
 }

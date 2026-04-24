@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getPublicSharedHistory } from '../services/historyApi'
+import { getPublicSharedHistory, getPublicSimilarSharedHistory } from '../services/historyApi'
 
 const categoryLabels = {
   'Type Error': 'Tip Hatası',
@@ -42,6 +42,7 @@ function SharedAnalysisPage() {
   const [analysis, setAnalysis] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [errorText, setErrorText] = useState('')
+  const [similarItems, setSimilarItems] = useState([])
 
   const categoryLabel = analysis ? getCategoryLabel(analysis.category) : ''
   const summaryText = normalizeText(analysis?.shortSummary)
@@ -71,12 +72,14 @@ function SharedAnalysisPage() {
 
       if (!normalizedSlug) {
         setErrorText('Paylaşım bağlantısı geçersiz.')
+        setSimilarItems([])
         setIsLoading(false)
         return
       }
 
       setIsLoading(true)
       setErrorText('')
+      setSimilarItems([])
 
       try {
         const data = await getPublicSharedHistory(normalizedSlug)
@@ -86,12 +89,41 @@ function SharedAnalysisPage() {
         }
 
         setAnalysis(data)
+
+        const similarQuery = normalizeText(data?.errorMessage) || normalizeText(data?.shortSummary)
+
+        if (!similarQuery) {
+          setSimilarItems([])
+          return
+        }
+
+        try {
+          const similarData = await getPublicSimilarSharedHistory(similarQuery, normalizedSlug)
+
+          if (cancelled) {
+            return
+          }
+
+          const filteredItems = similarData
+            .filter((item) => {
+              const similarSlug = normalizeText(item?.shareSlug)
+              return similarSlug && similarSlug !== normalizedSlug
+            })
+            .slice(0, 3)
+
+          setSimilarItems(filteredItems)
+        } catch {
+          if (!cancelled) {
+            setSimilarItems([])
+          }
+        }
       } catch (error) {
         if (cancelled) {
           return
         }
 
         setAnalysis(null)
+        setSimilarItems([])
         setErrorText(error?.message || 'Paylaşılan analiz alınamadı.')
       } finally {
         if (!cancelled) {
@@ -214,6 +246,32 @@ function SharedAnalysisPage() {
               </section>
             </div>
           </article>
+
+          {similarItems.length > 0 && (
+            <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Benzer paylaşılan hatalar</h2>
+              <div className="mt-3 space-y-2.5">
+                {similarItems.map((item, index) => {
+                  const similarSlug = normalizeText(item?.shareSlug)
+                  const similarCategory = getCategoryLabel(item?.category)
+                  const similarSummary = normalizeText(item?.shortSummary)
+
+                  return (
+                    <Link
+                      key={`${similarSlug}-${index}`}
+                      to={`/share/${similarSlug}`}
+                      className="block rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 transition hover:border-[#6366F1]/35 hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-400/40 dark:hover:bg-slate-800"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{similarCategory}</p>
+                      <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
+                        {similarSummary || 'Kısa özet bulunmuyor.'}
+                      </p>
+                    </Link>
+                  )
+                })}
+              </div>
+            </section>
+          )}
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Sonraki Adım</p>

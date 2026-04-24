@@ -168,3 +168,18 @@ export async function getSimilarHistory(query) {
 
   return result.data
 }
+
+export async function getPublicSimilarSharedHistory(query, excludeSlug) {
+  const result = await requestJson(
+    buildApiUrl(`/public/history/similar${buildQueryString({ query, excludeSlug })}`),
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+    'Benzer paylaşılan analizler alınamadı.',
+  )
+
+  return Array.isArray(result.data) ? result.data : []
+}

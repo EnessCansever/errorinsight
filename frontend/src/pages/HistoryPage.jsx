@@ -621,11 +621,14 @@ function HistoryPage() {
             <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
               {selectedDetail ? 'Analiz Detayı' : 'Detay'}
             </h3>
+            {isDetailLoading && selectedDetail && (
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Detay güncelleniyor...</p>
+            )}
           </div>
 
-          {isDetailLoading && (
+          {isDetailLoading && !selectedDetail && (
             <div className="flex items-center justify-center py-8">
-              <p className="text-sm text-slate-500 dark:text-slate-400">{selectedDetail ? 'Güncelleniyor...' : 'Yükleniyor...'}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Yükleniyor...</p>
             </div>
           )}
 

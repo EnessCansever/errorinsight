@@ -150,6 +150,7 @@ function AnalyzePage() {
     setErrorText('')
     setAnalysisResult(null)
     setSimilarItems([])
+    setIsSimilarLoading(false)
 
     const trimmedErrorMessage = errorMessage.trim()
     const trimmedCodeSnippet = codeSnippet.trim()
@@ -161,32 +162,37 @@ function AnalyzePage() {
     }
 
     setIsLoading(true)
+    let result = null
 
     try {
-      const result = await analyzeErrorMessage({
+      result = await analyzeErrorMessage({
         errorMessage: trimmedErrorMessage,
         codeSnippet: trimmedCodeSnippet || undefined,
       })
       setAnalysisResult(result)
       toast.success('Analiz kaydedildi. Geçmişten tekrar erişebilirsin.')
-
-      // Benzer hatalar arat
-      setIsSimilarLoading(true)
-      try {
-        const similar = await getSimilarHistory(trimmedErrorMessage)
-        setSimilarItems(Array.isArray(similar) ? similar : [])
-      } catch {
-        // Benzer hatalar arması başarısız olursa sessizce devam et
-        setSimilarItems([])
-      } finally {
-        setIsSimilarLoading(false)
-      }
     } catch (error) {
       const message = error?.message || 'Analiz yapılırken bir sorun oluştu. Lütfen tekrar deneyin.'
       setErrorText(message)
       toast.error(message)
+      return
     } finally {
       setIsLoading(false)
+    }
+
+    if (!result) {
+      return
+    }
+
+    // Benzer hatalar araması başarısız olursa sessizce devam et
+    setIsSimilarLoading(true)
+    try {
+      const similar = await getSimilarHistory(trimmedErrorMessage)
+      setSimilarItems(Array.isArray(similar) ? similar : [])
+    } catch {
+      setSimilarItems([])
+    } finally {
+      setIsSimilarLoading(false)
     }
   }
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import AnalyzeResultCard from '../components/AnalyzeResultCard'
@@ -106,6 +106,7 @@ function AnalyzePage() {
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
   const [similarItems, setSimilarItems] = useState([])
   const [isSimilarLoading, setIsSimilarLoading] = useState(false)
+  const latestSubmitIdRef = useRef(0)
 
   const resetAnalyzeState = useCallback(() => {
     setErrorMessage('')
@@ -147,6 +148,9 @@ function AnalyzePage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    const submitId = latestSubmitIdRef.current + 1
+    latestSubmitIdRef.current = submitId
+
     setErrorText('')
     setAnalysisResult(null)
     setSimilarItems([])
@@ -169,30 +173,57 @@ function AnalyzePage() {
         errorMessage: trimmedErrorMessage,
         codeSnippet: trimmedCodeSnippet || undefined,
       })
+
+      if (latestSubmitIdRef.current !== submitId) {
+        return
+      }
+
+      if (!result) {
+        const message = 'Analiz sonucu alınamadı. Lütfen tekrar deneyin.'
+        setErrorText(message)
+        toast.error(message)
+        return
+      }
+
       setAnalysisResult(result)
       toast.success('Analiz kaydedildi. Geçmişten tekrar erişebilirsin.')
     } catch (error) {
+      if (latestSubmitIdRef.current !== submitId) {
+        return
+      }
+
       const message = error?.message || 'Analiz yapılırken bir sorun oluştu. Lütfen tekrar deneyin.'
       setErrorText(message)
       toast.error(message)
       return
     } finally {
-      setIsLoading(false)
+      if (latestSubmitIdRef.current === submitId) {
+        setIsLoading(false)
+      }
     }
 
-    if (!result) {
+    if (latestSubmitIdRef.current !== submitId || !result) {
       return
     }
 
-    // Benzer hatalar araması başarısız olursa sessizce devam et
+    // Benzer hatalar ana analiz sonucunu bloklamadan arka planda yüklenir
     setIsSimilarLoading(true)
     try {
       const similar = await getSimilarHistory(trimmedErrorMessage)
+
+      if (latestSubmitIdRef.current !== submitId) {
+        return
+      }
+
       setSimilarItems(Array.isArray(similar) ? similar : [])
     } catch {
-      setSimilarItems([])
+      if (latestSubmitIdRef.current === submitId) {
+        setSimilarItems([])
+      }
     } finally {
-      setIsSimilarLoading(false)
+      if (latestSubmitIdRef.current === submitId) {
+        setIsSimilarLoading(false)
+      }
     }
   }
 

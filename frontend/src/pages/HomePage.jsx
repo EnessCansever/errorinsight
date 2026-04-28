@@ -45,6 +45,7 @@ const howItWorks = [
   },
 ]
 
+const demoErrorMessage = "Uncaught TypeError: Cannot read properties of undefined (reading 'map')"
 const demoCode = `const names = users.map((user) => user.name)`
 
 function HomePage() {
@@ -168,7 +169,7 @@ function HomePage() {
               Örnek Hata Mesajı
             </h3>
             <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5 break-words text-sm text-slate-700 sm:p-3 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-              Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+              {demoErrorMessage}
             </div>
 
             <h3 className="mt-4 text-sm font-semibold text-slate-900 dark:text-slate-100">
@@ -243,6 +244,19 @@ function HomePage() {
               </div>
             </div>
           </article>
+        </div>
+
+        <div>
+          <Link
+            to="/analyze"
+            state={{
+              errorMessage: demoErrorMessage,
+              codeSnippet: demoCode,
+            }}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#6366F1] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
+          >
+            Bu örneği analiz et
+          </Link>
         </div>
       </section>
 

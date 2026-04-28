@@ -3,6 +3,8 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { usePageMeta } from '../hooks/usePageMeta'
 
+const ANALYZE_PREFILL_STORAGE_KEY = 'fixora_analyze_prefill'
+
 const featureCards = [
   {
     title: 'Sadece çeviri değil, analiz',
@@ -49,6 +51,20 @@ const demoErrorMessage = "Uncaught TypeError: Cannot read properties of undefine
 const demoCode = `const names = users.map((user) => user.name)`
 
 function HomePage() {
+  const handleAnalyzePrefillClick = () => {
+    try {
+      sessionStorage.setItem(
+        ANALYZE_PREFILL_STORAGE_KEY,
+        JSON.stringify({
+          errorMessage: demoErrorMessage,
+          codeSnippet: demoCode,
+        }),
+      )
+    } catch {
+      // Storage erişimi başarısız olsa da yönlendirme akışı devam etsin.
+    }
+  }
+
   usePageMeta({
     title: 'Fixora - Hata Mesajlarını Türkçeleştir',
     description:
@@ -249,13 +265,10 @@ function HomePage() {
         <div>
           <Link
             to="/analyze"
-            state={{
-              errorMessage: demoErrorMessage,
-              codeSnippet: demoCode,
-            }}
+            onClick={handleAnalyzePrefillClick}
             className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#6366F1] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
           >
-            Bu örneği analiz et
+            Bu örneği forma doldur
           </Link>
         </div>
       </section>

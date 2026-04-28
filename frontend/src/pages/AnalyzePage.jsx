@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import AnalyzeResultCard from '../components/AnalyzeResultCard'
 import ExampleErrorList from '../components/ExampleErrorList'
 import { useAuth } from '../context/AuthContext'
 import { usePageMeta } from '../hooks/usePageMeta'
 import { analyzeErrorMessage } from '../services/analyzeApi'
 import { getSimilarHistory } from '../services/historyApi'
+
+const ANALYZE_PREFILL_STORAGE_KEY = 'fixora_analyze_prefill'
 
 const LOADING_MESSAGES = [
   'Hata mesajı analiz ediliyor...',
@@ -92,7 +94,6 @@ function StagedLoadingMessage({ message, step }) {
 
 function AnalyzePage() {
   const { isAuthenticated } = useAuth()
-  const location = useLocation()
 
   usePageMeta({
     title: 'Hata Analizi | Fixora',
@@ -148,28 +149,35 @@ function AnalyzePage() {
   }, [isAuthenticated, resetAnalyzeState])
 
   useEffect(() => {
-    const locationState = location.state
+    const rawPrefill = sessionStorage.getItem(ANALYZE_PREFILL_STORAGE_KEY)
 
-    if (!locationState || typeof locationState !== 'object') {
+    if (!rawPrefill) {
       return
     }
 
-    const prefillErrorMessage =
-      typeof locationState.errorMessage === 'string' ? locationState.errorMessage : ''
-    const prefillCodeSnippet =
-      typeof locationState.codeSnippet === 'string' ? locationState.codeSnippet : ''
+    sessionStorage.removeItem(ANALYZE_PREFILL_STORAGE_KEY)
 
-    if (!prefillErrorMessage && !prefillCodeSnippet) {
-      return
+    try {
+      const parsedPrefill = JSON.parse(rawPrefill)
+      const prefillErrorMessage =
+        typeof parsedPrefill?.errorMessage === 'string' ? parsedPrefill.errorMessage : ''
+      const prefillCodeSnippet =
+        typeof parsedPrefill?.codeSnippet === 'string' ? parsedPrefill.codeSnippet : ''
+
+      if (!prefillErrorMessage && !prefillCodeSnippet) {
+        return
+      }
+
+      setErrorMessage(prefillErrorMessage)
+      setCodeSnippet(prefillCodeSnippet)
+      setAnalysisResult(null)
+      setSimilarItems([])
+      setIsSimilarLoading(false)
+      setErrorText('')
+    } catch {
+      // Geçersiz storage verisi varsa sessizce yok say.
     }
-
-    setErrorMessage(prefillErrorMessage)
-    setCodeSnippet(prefillCodeSnippet)
-    setAnalysisResult(null)
-    setSimilarItems([])
-    setIsSimilarLoading(false)
-    setErrorText('')
-  }, [location.state])
+  }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault()

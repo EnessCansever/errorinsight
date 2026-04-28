@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { usePageMeta } from '../hooks/usePageMeta'
@@ -8,6 +8,7 @@ const AUTH_NOTICE_KEY = 'fixora_auth_notice'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
 
   usePageMeta({
@@ -46,7 +47,13 @@ export default function LoginPage() {
     try {
       await login(email, password)
       toast.success('Başarıyla giriş yaptınız.')
-      navigate('/analyze')
+
+      const from = location.state?.from
+      const nextPath = typeof from?.pathname === 'string' ? from.pathname : '/analyze'
+
+      navigate(nextPath, {
+        replace: true,
+      })
     } catch (err) {
       const message = err?.message || 'Giriş işlemi sırasında bir hata oluştu.'
       setError(message)

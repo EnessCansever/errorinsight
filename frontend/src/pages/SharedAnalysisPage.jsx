@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { getPublicSharedHistory, getPublicSimilarSharedHistory } from '../services/historyApi'
 
 const categoryLabels = {
@@ -43,6 +44,7 @@ function SharedAnalysisPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [errorText, setErrorText] = useState('')
   const [similarItems, setSimilarItems] = useState([])
+  const [isCopyingLink, setIsCopyingLink] = useState(false)
 
   const categoryLabel = analysis ? getCategoryLabel(analysis.category) : ''
   const summaryText = normalizeText(analysis?.shortSummary)
@@ -64,6 +66,41 @@ function SharedAnalysisPage() {
   const exampleFixCode = normalizeText(analysis?.exampleFixCode)
   const seoContentText = normalizeText(analysis?.seoContent)
   const notesText = normalizeText(analysis?.notes)
+
+  const handleCopyShareLink = async () => {
+    if (isCopyingLink) {
+      return
+    }
+
+    setIsCopyingLink(true)
+
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      toast.success('Paylaşım linki kopyalandı.')
+    } catch {
+      toast.error('Link kopyalanamadı.')
+    } finally {
+      setIsCopyingLink(false)
+    }
+  }
+
+  const handleAnalyzePrefillClick = () => {
+    if (!analysis) {
+      return
+    }
+
+    try {
+      sessionStorage.setItem(
+        'fixora_analyze_prefill',
+        JSON.stringify({
+          errorMessage: analysis.errorMessage,
+          codeSnippet: analysis.codeSnippet || '',
+        }),
+      )
+    } catch {
+      // Storage erisimi basarisiz olsa da yonlendirme akisina devam edilir.
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -144,7 +181,7 @@ function SharedAnalysisPage() {
     <section className="mx-auto w-full max-w-3xl space-y-5 sm:space-y-6">
       <header className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6366F1]">Paylaşılan Analiz</p>
-        <h1 className="text-2xl font-bold break-words text-slate-900 sm:text-3xl dark:text-slate-100">{pageHeading}</h1>
+        <h1 className="text-2xl font-bold wrap-break-word text-slate-900 sm:text-3xl dark:text-slate-100">{pageHeading}</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">Bu sayfa, paylaşıma açılmış tek bir analiz kaydını gösterir.</p>
       </header>
 
@@ -169,6 +206,13 @@ function SharedAnalysisPage() {
 
       {!isLoading && !errorText && analysis && (
         <>
+          <section className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-500/30 dark:bg-indigo-500/10">
+            <h2 className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Benzer bir hata mı alıyorsun?</h2>
+            <p className="mt-1 text-sm leading-6 text-indigo-800 dark:text-indigo-300">
+              Bu analizi örnek alarak kendi hata mesajını Fixora&apos;da Türkçe, adım adım çözüm önerileriyle inceleyebilirsin.
+            </p>
+          </section>
+
           <article className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 md:p-6 dark:border-slate-800 dark:bg-slate-900">
             <div className="space-y-4">
               <section className="rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800">
@@ -274,6 +318,7 @@ function SharedAnalysisPage() {
                       <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
                         {similarSummary || 'Kısa özet bulunmuyor.'}
                       </p>
+                      <p className="mt-2 text-xs font-semibold text-[#6366F1] dark:text-indigo-300">Bu hatayı incele</p>
                     </Link>
                   )
                 })}
@@ -290,6 +335,21 @@ function SharedAnalysisPage() {
               >
                 Kendi hatanı analiz et
               </Link>
+              <button
+                type="button"
+                onClick={handleCopyShareLink}
+                disabled={isCopyingLink}
+                className="inline-flex min-h-10 items-center justify-center rounded-lg border border-indigo-300 bg-indigo-50 px-4 py-2 text-sm font-semibold text-[#6366F1] transition hover:bg-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 disabled:cursor-not-allowed disabled:opacity-60 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20"
+              >
+                {isCopyingLink ? 'Kopyalanıyor...' : 'Bu analizi paylaş'}
+              </button>
+              <Link
+                to="/analyze"
+                onClick={handleAnalyzePrefillClick}
+                className="inline-flex min-h-10 items-center justify-center rounded-lg border border-indigo-300 bg-white px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 dark:border-indigo-500/40 dark:bg-slate-900 dark:text-indigo-300 dark:hover:bg-slate-800"
+              >
+                Bu hatayı forma doldur
+              </Link>
               <Link
                 to="/"
                 className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800"
@@ -297,6 +357,7 @@ function SharedAnalysisPage() {
                 Fixora ana sayfasına dön
               </Link>
             </div>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">Analiz oluşturmak için giriş yapman gerekir.</p>
           </div>
         </>
       )}

@@ -50,6 +50,28 @@ const howItWorks = [
 const demoErrorMessage = "Uncaught TypeError: Cannot read properties of undefined (reading 'map')"
 const demoCode = `const names = users.map((user) => user.name)`
 
+const demoCategory = 'Type Error'
+const demoShortSummary = "users değişkeni beklenen anda dizi değil veya tanımsız olduğu için map() çağrısı hata veriyor."
+const demoPossibleCauses = [
+  'API cevabı beklenenden geç geliyor ve users henüz tanımsız.',
+  'users state ilk render sırasında undefined olabilir.',
+  'API hatası nedeniyle veri dönmüyor ama kontrol yapılmıyor.',
+]
+const demoSolutionSteps = [
+  'users için başlangıç değeri olarak boş dizi [] kullan.',
+  'map() çağrısı öncesi Array.isArray(users) || users.length kontrolü ekle.',
+  'API çağrısında try-catch ile hata yönetimi ekle.',
+]
+const demoExampleFixCode = `// Düzeltilmiş Kod
+const [users, setUsers] = useState([])
+
+const names = Array.isArray(users) && users.length > 0
+  ? users.map((user) => user.name)
+  : []
+
+console.log(names) // Güvenli çalışır`
+
+
 function HomePage() {
   const handleAnalyzePrefillClick = () => {
     try {
@@ -184,7 +206,7 @@ function HomePage() {
             <h3 className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
               Örnek Hata Mesajı
             </h3>
-            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5 break-words text-sm text-slate-700 sm:p-3 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+            <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2.5 wrap-break-word text-sm text-slate-700 sm:p-3 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
               {demoErrorMessage}
             </div>
 
@@ -232,10 +254,19 @@ function HomePage() {
             <div className="mt-3 space-y-3">
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  Kategori
+                </p>
+                <span className="mt-2 inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-500/20 dark:text-amber-300">
+                  Tip Hatası
+                </span>
+              </div>
+
+              <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   Kısa Özet
                 </p>
-                <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
-                  users değişkeni beklenen anda dizi değil veya tanımsız olduğu için map çağrısı hata veriyor.
+                <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">
+                  {demoShortSummary}
                 </p>
               </div>
 
@@ -243,32 +274,86 @@ function HomePage() {
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   Muhtemel Nedenler
                 </p>
-                <ul className="mt-2 space-y-1 text-sm text-slate-700 dark:text-slate-300">
-                  <li>• API cevabı beklenenden geç geliyor.</li>
-                  <li>• users state ilk render’da undefined olabilir.</li>
+                <ul className="mt-2 space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
+                  {demoPossibleCauses.map((cause, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="shrink-0 font-medium text-slate-500 dark:text-slate-400">•</span>
+                      <span>{cause}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
 
               <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  Çözüm
+                  Çözüm Adımları
                 </p>
-                <ol className="mt-2 space-y-1 text-sm text-slate-700 dark:text-slate-300">
-                  <li>1. users için başlangıç değeri olarak boş dizi kullan.</li>
-                  <li>2. map çağrısı öncesi Array.isArray(users) kontrolü ekle.</li>
+                <ol className="mt-2 space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
+                  {demoSolutionSteps.map((step, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="shrink-0 font-medium text-[#6366F1] dark:text-indigo-300">{idx + 1}.</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
                 </ol>
+              </div>
+
+              <div className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  Örnek Düzeltilmiş Kod
+                </p>
+                <div className="mt-2 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+                  <div className="min-w-0 dark:hidden">
+                    <SyntaxHighlighter
+                      language="javascript"
+                      style={oneLight}
+                      customStyle={{
+                        margin: 0,
+                        padding: '12px',
+                        fontSize: '11px',
+                        background: '#ffffff',
+                        minWidth: 'max-content',
+                      }}
+                      showLineNumbers
+                    >
+                      {demoExampleFixCode}
+                    </SyntaxHighlighter>
+                  </div>
+                  <div className="hidden min-w-0 dark:block">
+                    <SyntaxHighlighter
+                      language="javascript"
+                      style={oneDark}
+                      customStyle={{
+                        margin: 0,
+                        padding: '12px',
+                        fontSize: '11px',
+                        background: '#0f172a',
+                        minWidth: 'max-content',
+                      }}
+                      showLineNumbers
+                    >
+                      {demoExampleFixCode}
+                    </SyntaxHighlighter>
+                  </div>
+                </div>
               </div>
             </div>
           </article>
         </div>
 
-        <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
             to="/analyze"
             onClick={handleAnalyzePrefillClick}
             className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#6366F1] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
           >
             Bu örneği forma doldur
+          </Link>
+          <Link
+            to="/analyze"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-[#6366F1]/35 hover:text-[#6366F1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-indigo-400/40 dark:hover:text-indigo-300"
+          >
+            Kendi hatanı analiz et
           </Link>
         </div>
       </section>

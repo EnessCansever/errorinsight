@@ -110,6 +110,52 @@ const errorGuides = [
     seoDescription: 'CORS policy hatasının olası nedenleri ve kısa çözüm önerileri.',
     lastModified: '2026-05-03T00:00:00.000Z',
   },
+  {
+    slug: 'referenceerror-is-not-defined',
+    title: 'ReferenceError: is not defined',
+    category: 'Reference Error',
+    shortSummary: 'Tanımlanmamış bir değişken veya fonksiyon kullanılmaya çalışıldığında oluşur.',
+    description:
+      'Bu hata genellikle bir değişkenin, fonksiyonun veya import edilen değerin tanımlanmadan önce kullanılması sonucu ortaya çıkar.',
+    possibleCauses: [
+      'Değişken veya fonksiyon hiç tanımlanmamış olabilir.',
+      'Değişken yanlış scope içinde tanımlanmış olabilir.',
+      'Import/export adı hatalı yazılmış olabilir.',
+    ],
+    solutionSteps: [
+      'Hata mesajında geçen değişken veya fonksiyon adını kontrol edin.',
+      'Değişkenin kullanıldığı yerde erişilebilir scope içinde olduğundan emin olun.',
+      'Import/export isimlerini ve dosya yollarını kontrol edin.',
+    ],
+    brokenCode: "console.log(userName)",
+    fixedCode: "const userName = 'Enes'\nconsole.log(userName)",
+    seoTitle: 'ReferenceError is not defined — Çözümü | Fixora',
+    seoDescription: 'ReferenceError is not defined hatasının nedenleri, scope kontrolü ve hızlı çözüm adımları.',
+    lastModified: '2026-05-03T00:00:00.000Z',
+  },
+  {
+    slug: 'syntaxerror-unexpected-token',
+    title: 'SyntaxError: Unexpected token',
+    category: 'Syntax Error',
+    shortSummary: 'JavaScript kodunda beklenmeyen veya hatalı yazılmış bir karakter/sözdizimi olduğunda oluşur.',
+    description:
+      'Bu hata genellikle eksik parantez, yanlış virgül, hatalı tırnak kullanımı veya bozuk JavaScript sözdizimi nedeniyle ortaya çıkar.',
+    possibleCauses: [
+      'Parantez, süslü parantez veya köşeli parantez eksik olabilir.',
+      'String tırnakları kapanmamış olabilir.',
+      'Yanlış yerde virgül, noktalı virgül veya özel karakter kullanılmış olabilir.',
+    ],
+    solutionSteps: [
+      'Hata mesajında belirtilen satırı ve bir önceki satırı kontrol edin.',
+      'Parantez, tırnak ve virgül kullanımını gözden geçirin.',
+      'Kod formatlayıcı veya linter kullanarak sözdizimi hatasını görünür hale getirin.',
+    ],
+    brokenCode: "const user = { name: 'Enes', age: 26,",
+    fixedCode: "const user = { name: 'Enes', age: 26 }",
+    seoTitle: 'SyntaxError Unexpected token — Çözümü | Fixora',
+    seoDescription: 'SyntaxError Unexpected token hatasının yaygın nedenleri ve JavaScript sözdizimi çözüm adımları.',
+    lastModified: '2026-05-03T00:00:00.000Z',
+  },
 ]
 
 export default errorGuides

@@ -396,36 +396,48 @@ function HomePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             to="/errors/cannot-read-properties-of-undefined-reading-map"
-            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            className="block w-full rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 transition transform hover:border-[#6366F1]/35 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 focus-visible:outline-none"
+            aria-label="TypeError rehberi — Cannot read properties of undefined"
           >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">TypeError</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Yanlış veri tipi veya beklenmeyen değer kullanımını açıklar.</p>
           </Link>
-          <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <Link
+            to="/errors/referenceerror-is-not-defined"
+            className="block w-full rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 transition transform hover:border-[#6366F1]/35 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 focus-visible:outline-none"
+            aria-label="ReferenceError rehberi — is not defined"
+          >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">ReferenceError</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Tanımsız değişken veya yanlış scope kaynaklı problemleri gösterir.</p>
-          </article>
-          <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          </Link>
+          <Link
+            to="/errors/syntaxerror-unexpected-token"
+            className="block w-full rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 transition transform hover:border-[#6366F1]/35 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 focus-visible:outline-none"
+            aria-label="SyntaxError rehberi — Unexpected token"
+          >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">SyntaxError</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Sözdizimi kırılmalarını ve satır bazlı olası düzeltmeleri özetler.</p>
-          </article>
+          </Link>
           <Link
             to="/errors/react-hydration-failed"
-            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            className="block w-full rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 transition transform hover:border-[#6366F1]/35 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 focus-visible:outline-none"
+            aria-label="React hataları rehberi — Hydration failed"
           >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">React hataları</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">State, render ve lifecycle kaynaklı React hata çözümü için yol gösterir.</p>
           </Link>
           <Link
             to="/errors/cors-policy-blocked"
-            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            className="block w-full rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 transition transform hover:border-[#6366F1]/35 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 focus-visible:outline-none"
+            aria-label="API / Network hataları rehberi — CORS policy blocked"
           >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">API / Network hataları</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">İstek/yanıt akışındaki kopmaları ve veri formatı sorunlarını sadeleştirir.</p>
           </Link>
           <Link
             to="/errors/module-not-found"
-            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+            className="block w-full rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 transition transform hover:border-[#6366F1]/35 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#6366F1]/25 focus-visible:outline-none"
+            aria-label="Build tool hataları rehberi — Module not found"
           >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Build tool hataları</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Derleme sürecindeki config, bağımlılık ve uyumluluk problemlerini kategorize eder.</p>

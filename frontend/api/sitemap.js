@@ -3,6 +3,7 @@ export const config = {
 }
 
 const SITE_ORIGIN = 'https://getfixora.dev'
+import errorGuides from '../src/data/errorGuides'
 const DEFAULT_BACKEND_API_URL = 'https://fixora-api-loyo.onrender.com/api'
 
 function getBackendApiBaseUrl() {
@@ -78,9 +79,28 @@ async function fetchPublicSitemap() {
   return Array.isArray(payload?.data) ? payload.data : []
 }
 
-export default async function handler() {
+export default async function handler(request) {
   const shareItems = await fetchPublicSitemap().catch(() => [])
-  const xml = buildSitemapXml(shareItems)
+
+  const urls = [buildUrlEntry(`${SITE_ORIGIN}/`)]
+
+  for (const item of shareItems) {
+    const shareSlug = String(item?.shareSlug || item?.slug || '').trim()
+
+    if (!shareSlug) continue
+
+    const loc = `${SITE_ORIGIN}/share/${shareSlug}`
+    const lastmod = formatLastmod(item?.updatedAt || item?.createdAt || item?.lastModified)
+    urls.push(buildUrlEntry(loc, lastmod))
+  }
+
+  for (const g of errorGuides) {
+    const loc = `${SITE_ORIGIN}/errors/${String(g.slug || '').trim()}`
+    const lastmod = formatLastmod(g.lastModified)
+    urls.push(buildUrlEntry(loc, lastmod))
+  }
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`
 
   return new Response(xml, {
     status: 200,

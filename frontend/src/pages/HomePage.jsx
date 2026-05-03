@@ -394,10 +394,13 @@ function HomePage() {
       <section className="space-y-5">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Hangi hataları açıklar?</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <Link
+            to="/errors/cannot-read-properties-of-undefined-reading-map"
+            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+          >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">TypeError</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Yanlış veri tipi veya beklenmeyen değer kullanımını açıklar.</p>
-          </article>
+          </Link>
           <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">ReferenceError</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Tanımsız değişken veya yanlış scope kaynaklı problemleri gösterir.</p>
@@ -406,18 +409,27 @@ function HomePage() {
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">SyntaxError</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Sözdizimi kırılmalarını ve satır bazlı olası düzeltmeleri özetler.</p>
           </article>
-          <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <Link
+            to="/errors/react-hydration-failed"
+            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+          >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">React hataları</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">State, render ve lifecycle kaynaklı React hata çözümü için yol gösterir.</p>
-          </article>
-          <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          </Link>
+          <Link
+            to="/errors/cors-policy-blocked"
+            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+          >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">API / Network hataları</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">İstek/yanıt akışındaki kopmaları ve veri formatı sorunlarını sadeleştirir.</p>
-          </article>
-          <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          </Link>
+          <Link
+            to="/errors/module-not-found"
+            className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+          >
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Build tool hataları</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Derleme sürecindeki config, bağımlılık ve uyumluluk problemlerini kategorize eder.</p>
-          </article>
+          </Link>
         </div>
       </section>
 

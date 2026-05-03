@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import AnalyzePage from './pages/AnalyzePage'
 import HistoryPage from './pages/HistoryPage'
 import SharedAnalysisPage from './pages/SharedAnalysisPage'
+import ErrorGuidePage from './pages/ErrorGuidePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -19,6 +20,7 @@ function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/share/:slug" element={<SharedAnalysisPage />} />
+        <Route path="/errors/:slug" element={<ErrorGuidePage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/analyze" element={<AnalyzePage />} />
           <Route path="/history" element={<HistoryPage />} />

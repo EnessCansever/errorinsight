@@ -9,6 +9,10 @@
       "destination": "/api/share-preview?slug=:slug"
     },
     {
+      "source": "/errors/:slug",
+      "destination": "/api/error-preview?slug=:slug"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

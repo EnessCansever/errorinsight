@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { usePageMeta } from '../hooks/usePageMeta'
 
 const ANALYZE_PREFILL_STORAGE_KEY = 'fixora_analyze_prefill'
@@ -50,7 +48,6 @@ const howItWorks = [
 const demoErrorMessage = "Uncaught TypeError: Cannot read properties of undefined (reading 'map')"
 const demoCode = `const names = users.map((user) => user.name)`
 
-const demoCategory = 'Type Error'
 const demoShortSummary = "users değişkeni beklenen anda dizi değil veya tanımsız olduğu için map() çağrısı hata veriyor."
 const demoPossibleCauses = [
   'API cevabı beklenenden geç geliyor ve users henüz tanımsız.',
@@ -213,39 +210,10 @@ function HomePage() {
             <h3 className="mt-4 text-sm font-semibold text-slate-900 dark:text-slate-100">
               Soruna Neden Olan Kod
             </h3>
-            <div className="mt-2 overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
-              <div className="min-w-0 dark:hidden">
-                <SyntaxHighlighter
-                  language="javascript"
-                  style={oneLight}
-                  customStyle={{
-                    margin: 0,
-                    padding: '12px',
-                    fontSize: '11px',
-                    background: '#f8fafc',
-                    minWidth: 'max-content',
-                  }}
-                  showLineNumbers
-                >
-                  {demoCode}
-                </SyntaxHighlighter>
-              </div>
-              <div className="hidden min-w-0 dark:block">
-                <SyntaxHighlighter
-                  language="javascript"
-                  style={oneDark}
-                  customStyle={{
-                    margin: 0,
-                    padding: '12px',
-                    fontSize: '11px',
-                    background: '#0f172a',
-                    minWidth: 'max-content',
-                  }}
-                  showLineNumbers
-                >
-                  {demoCode}
-                </SyntaxHighlighter>
-              </div>
+            <div className="mt-2 overflow-x-auto rounded-lg border border-slate-700">
+              <pre className="min-w-max bg-slate-900 p-3 text-xs text-slate-100 whitespace-pre">
+                <code>{demoCode}</code>
+              </pre>
             </div>
           </article>
 
@@ -302,39 +270,10 @@ function HomePage() {
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   Örnek Düzeltilmiş Kod
                 </p>
-                <div className="mt-2 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-                  <div className="min-w-0 dark:hidden">
-                    <SyntaxHighlighter
-                      language="javascript"
-                      style={oneLight}
-                      customStyle={{
-                        margin: 0,
-                        padding: '12px',
-                        fontSize: '11px',
-                        background: '#ffffff',
-                        minWidth: 'max-content',
-                      }}
-                      showLineNumbers
-                    >
-                      {demoExampleFixCode}
-                    </SyntaxHighlighter>
-                  </div>
-                  <div className="hidden min-w-0 dark:block">
-                    <SyntaxHighlighter
-                      language="javascript"
-                      style={oneDark}
-                      customStyle={{
-                        margin: 0,
-                        padding: '12px',
-                        fontSize: '11px',
-                        background: '#0f172a',
-                        minWidth: 'max-content',
-                      }}
-                      showLineNumbers
-                    >
-                      {demoExampleFixCode}
-                    </SyntaxHighlighter>
-                  </div>
+                <div className="mt-2 overflow-x-auto rounded-lg border border-slate-700">
+                  <pre className="min-w-max bg-slate-900 p-3 text-xs text-slate-100 whitespace-pre">
+                    <code>{demoExampleFixCode}</code>
+                  </pre>
                 </div>
               </div>
             </div>

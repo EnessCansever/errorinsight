@@ -9,6 +9,8 @@ import { analyzeErrorMessage } from '../services/analyzeApi'
 import { getSimilarHistory } from '../services/historyApi'
 
 const ANALYZE_PREFILL_STORAGE_KEY = 'fixora_analyze_prefill'
+const ERROR_MESSAGE_MAX_LENGTH = 5000
+const CODE_SNIPPET_MAX_LENGTH = 10000
 
 const LOADING_MESSAGES = [
   'Hata mesajı analiz ediliyor...',
@@ -16,6 +18,18 @@ const LOADING_MESSAGES = [
   'Çözüm adımları hazırlanıyor...',
   'Örnek fix kodu oluşturuluyor...',
 ]
+
+function getCounterClassName(currentLength, maxLength) {
+  if (currentLength >= maxLength) {
+    return 'text-red-600 dark:text-red-400'
+  }
+
+  if (currentLength >= maxLength * 0.9) {
+    return 'text-amber-600 dark:text-amber-400'
+  }
+
+  return 'text-slate-400 dark:text-slate-500'
+}
 
 function AnalyzeLoadingSkeleton() {
   return (
@@ -186,6 +200,20 @@ function AnalyzePage() {
     const trimmedErrorMessage = errorMessage.trim()
     const trimmedCodeSnippet = codeSnippet.trim()
 
+    if (trimmedErrorMessage.length > ERROR_MESSAGE_MAX_LENGTH) {
+      const message = 'Hata mesajı en fazla 5000 karakter olabilir.'
+      setErrorText(message)
+      toast.error(message)
+      return
+    }
+
+    if (trimmedCodeSnippet.length > CODE_SNIPPET_MAX_LENGTH) {
+      const message = 'Kod parçası en fazla 10000 karakter olabilir.'
+      setErrorText(message)
+      toast.error(message)
+      return
+    }
+
     if (!trimmedErrorMessage) {
       setErrorText('Lütfen önce bir hata mesajı girin.')
       toast.error('Hata mesajı girin.')
@@ -286,26 +314,42 @@ function AnalyzePage() {
           <label htmlFor="errorMessage" className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Hata Mesajı <span className="text-red-500">*</span>
           </label>
-          <textarea
-            id="errorMessage"
-            value={errorMessage}
-            onChange={(event) => setErrorMessage(event.target.value)}
-            className="min-h-28 w-full rounded-xl border border-slate-200 bg-slate-50/40 px-3 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 transition focus:border-[#6366F1]/40 focus:bg-white focus:ring-4 focus:ring-[#6366F1]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800"
-            placeholder="Örnek: Cannot read properties of undefined (reading 'map')"
-          />
+          <div className="space-y-1">
+            <textarea
+              id="errorMessage"
+              value={errorMessage}
+              maxLength={ERROR_MESSAGE_MAX_LENGTH}
+              onChange={(event) => setErrorMessage(event.target.value)}
+              className="min-h-28 w-full rounded-xl border border-slate-200 bg-slate-50/40 px-3 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 transition focus:border-[#6366F1]/40 focus:bg-white focus:ring-4 focus:ring-[#6366F1]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800"
+              placeholder="Örnek: Cannot read properties of undefined (reading 'map')"
+            />
+            <div className="flex justify-end">
+              <span className={`text-xs font-medium ${getCounterClassName(errorMessage.length, ERROR_MESSAGE_MAX_LENGTH)}`}>
+                {errorMessage.length} / {ERROR_MESSAGE_MAX_LENGTH}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-1">
           <label htmlFor="codeSnippet" className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Kod Parçası <span className="font-medium text-slate-400">(isteğe bağlı)</span>
           </label>
-          <textarea
-            id="codeSnippet"
-            value={codeSnippet}
-            onChange={(event) => setCodeSnippet(event.target.value)}
-            className="min-h-36 w-full rounded-xl border border-slate-200 bg-slate-50/40 px-3 py-2.5 font-mono text-sm text-slate-800 outline-none placeholder:text-slate-400 transition focus:border-[#6366F1]/40 focus:bg-white focus:ring-4 focus:ring-[#6366F1]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800"
-            placeholder="Örnek kodu buraya ekleyebilirsin..."
-          />
+          <div className="space-y-1">
+            <textarea
+              id="codeSnippet"
+              value={codeSnippet}
+              maxLength={CODE_SNIPPET_MAX_LENGTH}
+              onChange={(event) => setCodeSnippet(event.target.value)}
+              className="min-h-36 w-full rounded-xl border border-slate-200 bg-slate-50/40 px-3 py-2.5 font-mono text-sm text-slate-800 outline-none placeholder:text-slate-400 transition focus:border-[#6366F1]/40 focus:bg-white focus:ring-4 focus:ring-[#6366F1]/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-800"
+              placeholder="Örnek kodu buraya ekleyebilirsin..."
+            />
+            <div className="flex justify-end">
+              <span className={`text-xs font-medium ${getCounterClassName(codeSnippet.length, CODE_SNIPPET_MAX_LENGTH)}`}>
+                {codeSnippet.length} / {CODE_SNIPPET_MAX_LENGTH}
+              </span>
+            </div>
+          </div>
         </div>
 
         <button

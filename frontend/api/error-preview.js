@@ -1,4 +1,4 @@
-import errorGuides from '../src/data/errorGuides'
+import errorGuides from './errorGuidesData.js'
 
 export const config = {
   runtime: 'edge',
@@ -100,76 +100,6 @@ export default async function handler(request) {
 
   let html = injectMetadata(baseHtml, metadata)
   html = injectRobots(html, 'index, follow')
-
-  return new Response(html, {
-    status: 200,
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
-    },
-  })
-}
-import errorGuides from '../src/data/errorGuides'
-
-export const config = {
-  runtime: 'edge',
-}
-
-function escapeHtml(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
-
-function normalizeText(value) {
-  return String(value || '').replace(/\s+/g, ' ').trim()
-}
-
-export default async function handler(request) {
-  const url = new URL(request.url)
-  const slug = normalizeText(url.searchParams.get('slug'))
-
-  if (!slug) {
-    return new Response('<h1>Not found</h1>', { status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8' } })
-  }
-
-  const guide = errorGuides.find((g) => g.slug === slug)
-
-  if (!guide) {
-    return new Response('<h1>Not found</h1>', { status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8' } })
-  }
-
-  const canonical = `https://getfixora.dev/errors/${guide.slug}`
-
-  const html = `<!doctype html>
-<html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>${escapeHtml(guide.seoTitle || guide.title)}</title>
-  <meta name="description" content="${escapeHtml(guide.seoDescription || guide.shortSummary)}" />
-  <meta property="og:title" content="${escapeHtml(guide.seoTitle || guide.title)}" />
-  <meta property="og:description" content="${escapeHtml(guide.seoDescription || guide.shortSummary)}" />
-  <meta property="og:url" content="${canonical}" />
-  <meta property="og:type" content="article" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="canonical" href="${canonical}" />
-  <script type="application/ld+json">${JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'TechArticle',
-    headline: guide.title,
-    description: guide.shortSummary,
-    mainEntityOfPage: canonical,
-  })}</script>
-</head>
-<body>
-  <h1>${escapeHtml(guide.title)}</h1>
-  <p>${escapeHtml(guide.shortSummary)}</p>
-</body>
-</html>`
 
   return new Response(html, {
     status: 200,

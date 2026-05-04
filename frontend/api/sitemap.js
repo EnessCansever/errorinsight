@@ -1,9 +1,10 @@
+import errorGuides from './errorGuidesData.js'
+
 export const config = {
   runtime: 'edge',
 }
 
 const SITE_ORIGIN = 'https://getfixora.dev'
-import errorGuides from '../src/data/errorGuides'
 const DEFAULT_BACKEND_API_URL = 'https://fixora-api-loyo.onrender.com/api'
 
 function getBackendApiBaseUrl() {

@@ -10,6 +10,23 @@ function ErrorGuidePage() {
 
   const guide = useMemo(() => errorGuides.find((g) => g.slug === String(slug || '').trim()), [slug])
 
+  const relatedGuides = useMemo(() => {
+    if (!guide) return []
+
+    return [...errorGuides]
+      .filter((g) => g.slug !== guide.slug)
+      .sort((a, b) => {
+        const aSameCategory = a.category === guide.category
+        const bSameCategory = b.category === guide.category
+
+        if (aSameCategory && !bSameCategory) return -1
+        if (!aSameCategory && bSameCategory) return 1
+
+        return 0
+      })
+      .slice(0, 3)
+  }, [guide])
+
   usePageMeta(
     guide
       ? {
@@ -135,6 +152,37 @@ function ErrorGuidePage() {
           </div>
         </div>
       </article>
+
+      {relatedGuides.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Benzer hata rehberleri</h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedGuides.map((related) => (
+              <Link
+                key={related.slug}
+                to={`/errors/${related.slug}`}
+                className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 transition hover:border-[#6366F1]/35 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/25"
+                aria-label={`${related.title} rehberi`}
+              >
+                <div className="space-y-2">
+                  <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-500/20 dark:text-amber-300">
+                    {related.category}
+                  </span>
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 wrap-break-word">
+                    {related.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
+                    {related.shortSummary}
+                  </p>
+                  <div className="pt-1">
+                    <span className="text-xs font-semibold text-[#6366F1]">Rehberi incele →</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </section>
   )
 }

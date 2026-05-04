@@ -1,7 +1,5 @@
 import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { usePageMeta } from '../hooks/usePageMeta'
 import errorGuides from '../data/errorGuides'
 
@@ -143,8 +141,10 @@ function ErrorGuidePage() {
           {guide.brokenCode && (
             <div>
               <h3 className="text-sm font-semibold">Kırılan Kod</h3>
-              <div className="mt-2 overflow-x-auto rounded-lg border border-slate-200 bg-slate-900 p-3 text-xs text-slate-100">
-                <pre className="whitespace-pre-wrap">{guide.brokenCode}</pre>
+              <div className="mt-2 overflow-x-auto rounded-lg border border-slate-700">
+                <pre className="min-w-max bg-slate-900 p-3 text-xs text-slate-100 whitespace-pre">
+                  <code>{guide.brokenCode}</code>
+                </pre>
               </div>
             </div>
           )}
@@ -152,17 +152,10 @@ function ErrorGuidePage() {
           {guide.fixedCode && (
             <div>
               <h3 className="text-sm font-semibold">Örnek Düzeltilmiş Kod</h3>
-              <div className="mt-2 overflow-x-auto rounded-lg border border-slate-200 bg-white dark:bg-slate-900">
-                <div className="min-w-0 dark:hidden">
-                  <SyntaxHighlighter language="javascript" style={oneLight} customStyle={{ margin: 0, padding: '12px', fontSize: '11px' }} showLineNumbers>
-                    {guide.fixedCode}
-                  </SyntaxHighlighter>
-                </div>
-                <div className="hidden min-w-0 dark:block">
-                  <SyntaxHighlighter language="javascript" style={oneDark} customStyle={{ margin: 0, padding: '12px', fontSize: '11px' }} showLineNumbers>
-                    {guide.fixedCode}
-                  </SyntaxHighlighter>
-                </div>
+              <div className="mt-2 overflow-x-auto rounded-lg border border-slate-700">
+                <pre className="min-w-max bg-slate-900 p-3 text-xs text-slate-100 whitespace-pre">
+                  <code>{guide.fixedCode}</code>
+                </pre>
               </div>
             </div>
           )}

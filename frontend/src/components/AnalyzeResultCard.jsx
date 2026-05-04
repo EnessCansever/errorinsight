@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { createHistoryShareLink, sendHistoryFeedback } from '../services/historyApi'
 
 const badgeByCategory = {
@@ -219,25 +217,10 @@ function AnalyzeResultCard({ result }) {
                     {copied ? 'Kopyalandı' : 'Kopyala'}
                   </button>
                 </div>
-                <div className="overflow-x-auto dark:hidden">
-                  <SyntaxHighlighter
-                    language="javascript"
-                    style={oneLight}
-                    customStyle={{ margin: 0, padding: '16px', fontSize: '12px', background: '#ffffff', minWidth: '320px' }}
-                    showLineNumbers
-                  >
-                    {result.exampleFixCode}
-                  </SyntaxHighlighter>
-                </div>
-                <div className="hidden overflow-x-auto dark:block">
-                  <SyntaxHighlighter
-                    language="javascript"
-                    style={oneDark}
-                    customStyle={{ margin: 0, padding: '16px', fontSize: '12px', background: '#0f172a', minWidth: '320px' }}
-                    showLineNumbers
-                  >
-                    {result.exampleFixCode}
-                  </SyntaxHighlighter>
+                <div className="overflow-x-auto">
+                  <pre className="min-w-max bg-slate-900 p-4 text-xs text-slate-100 whitespace-pre">
+                    <code>{result.exampleFixCode}</code>
+                  </pre>
                 </div>
               </div>
             ) : (

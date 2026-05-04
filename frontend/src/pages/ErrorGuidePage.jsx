@@ -75,6 +75,39 @@ function ErrorGuidePage() {
         <p className="text-sm text-slate-600 dark:text-slate-400">{guide.shortSummary}</p>
       </header>
 
+      <section className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 shadow-sm dark:border-indigo-900/60 dark:bg-slate-900/70 sm:p-5">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Bu hata sende de mi var?</h2>
+            <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
+              Bu rehber genel çözümü gösterir. Kendi hata mesajını ve kod parçanı Fixora’ya göndererek sana özel,
+              adım adım analiz alabilirsin.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <Link
+              to="/analyze"
+              onClick={handlePrefill}
+              className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[#6366F1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/30"
+            >
+              Bu örneği forma doldur
+            </Link>
+
+            <Link
+              to="/analyze"
+              className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-indigo-300 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-indigo-700 dark:hover:text-white"
+            >
+              Kendi hatanı analiz et
+            </Link>
+          </div>
+
+          <p className="text-xs leading-5 text-slate-600 dark:text-slate-400">
+            Otomatik analiz başlamaz. Formu sen onaylayınca analiz edilir.
+          </p>
+        </div>
+      </section>
+
       <article className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 dark:border-slate-800 dark:bg-slate-900">
         <div className="space-y-4">
           <div>
@@ -133,23 +166,6 @@ function ErrorGuidePage() {
               </div>
             </div>
           )}
-
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <Link
-              to="/analyze"
-              onClick={handlePrefill}
-              className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[#6366F1] px-4 py-2 text-sm font-semibold text-white"
-            >
-              Bu örneği forma doldur
-            </Link>
-
-            <Link
-              to="/analyze"
-              className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
-            >
-              Kendi hatanı analiz et
-            </Link>
-          </div>
         </div>
       </article>
 

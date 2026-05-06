@@ -206,11 +206,19 @@ function SharedAnalysisPage() {
 
       {!isLoading && !errorText && analysis && (
         <>
-          <section className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-500/30 dark:bg-indigo-500/10">
-            <h2 className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Benzer bir hata mı alıyorsun?</h2>
-            <p className="mt-1 text-sm leading-6 text-indigo-800 dark:text-indigo-300">
-              Bu analizi örnek alarak kendi hata mesajını Fixora&apos;da Türkçe, adım adım çözüm önerileriyle inceleyebilirsin.
+          <section className="rounded-xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-500/30 dark:bg-indigo-500/10">
+            <h2 className="text-sm font-semibold text-indigo-900 dark:text-indigo-200">Kendi hatanı da analiz et</h2>
+            <p className="mt-2 text-sm leading-6 text-indigo-800 dark:text-indigo-300">
+              Bu paylaşılan bir analiz. Kendi hata mesajını Fixora&apos;ya yapıştırarak sana özel çözüm adımları alabilirsin.
             </p>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <Link
+                to="/analyze"
+                className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[#6366F1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#4f46e5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35 w-full sm:w-auto"
+              >
+                Kendi hatanı analiz et
+              </Link>
+            </div>
           </section>
 
           <article className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 md:p-6 dark:border-slate-800 dark:bg-slate-900">

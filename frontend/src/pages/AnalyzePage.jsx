@@ -302,8 +302,8 @@ function AnalyzePage() {
           Analiz
         </p>
         <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl dark:text-slate-100">Hata Analizi</h2>
-        <p className="max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
-          İngilizce hata mesajını gir, istersen ilgili kodu ekle. Sistem bu veriyi backend analiz servisine gönderir ve sonucu Türkçe olarak gösterir.
+        <p className="max-w-2xl text-sm leading-6 text-slate-700 dark:text-slate-300">
+          Console, browser veya terminalde gördüğün İngilizce hata mesajını aşağıya yapıştır. İlgili bileşeni, fonksiyonu veya istek kodunu eklersen analiz daha net olur. Sonuç tamamlandığında hesabına kaydedilir.
         </p>
       </header>
 
@@ -314,6 +314,9 @@ function AnalyzePage() {
           <label htmlFor="errorMessage" className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Hata Mesajı <span className="text-red-500">*</span>
           </label>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Console, browser veya terminalde gördüğün tam İngilizce hata mesajını yapıştır.
+          </p>
           <div className="space-y-1">
             <textarea
               id="errorMessage"
@@ -335,6 +338,9 @@ function AnalyzePage() {
           <label htmlFor="codeSnippet" className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Kod Parçası <span className="font-medium text-slate-400">(isteğe bağlı)</span>
           </label>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Zorunlu değil. İlgili bileşeni, fonksiyonu veya istek kodunu eklersen analiz daha net sonuç verir.
+          </p>
           <div className="space-y-1">
             <textarea
               id="codeSnippet"
@@ -359,6 +365,10 @@ function AnalyzePage() {
         >
           {isLoading ? 'Analiz ediliyor...' : 'Analiz Et'}
         </button>
+
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          ✓ Analiz tamamlandığında hesabına kaydedilir. Geçmişten istediğin zaman tekrar açabilir ve ekibinle paylaşabilirsin.
+        </p>
       </form>
 
       {isLoading && (
@@ -382,7 +392,7 @@ function AnalyzePage() {
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-900">
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Analiz sonucu burada gösterilecek</p>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Başlamak için önce hata mesajı gir. İstersen kod parçasını da ekleyip "Analiz Et" butonuna basabilirsin.
+            Başlamak için hata mesajını yapıştır. İstersen kod ekle, sonra "Analiz Et" butonuna bas. Analizin sonucu buraya yüklenecek.
           </p>
         </div>
       )}

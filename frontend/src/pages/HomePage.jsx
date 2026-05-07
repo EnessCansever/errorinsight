@@ -6,7 +6,7 @@ const ANALYZE_PREFILL_STORAGE_KEY = 'fixora_analyze_prefill'
 const featureCards = [
   {
     title: 'Sadece çeviri değil, analiz',
-    description: 'Hata mesajını bağlamıyla yorumlar; yalnızca kelime çevirisi sunmaz.',
+    description: 'Hata mesajını bağlamıyla yorumlar; neyin bozulduğunu da açıklar.',
   },
   {
     title: 'Kısa ve net özet',
@@ -100,11 +100,11 @@ function HomePage() {
 
         <div className="space-y-4">
           <h1 className="max-w-5xl text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100 md:text-5xl lg:text-6xl">
-            İngilizce hata mesajını dakikalarca çözmeye çalışma. Türkçe, net ve uygulanabilir analiz al.
+            İngilizce hata mesajını yapıştır. Türkçe, net ve uygulanabilir çözüm adımları al.
           </h1>
           <p className="max-w-3xl text-sm leading-7 text-slate-600 sm:text-base dark:text-slate-400">
-            Fixora, İngilizce console ve browser hatalarını anlaşılır hale getirir; kısa özet, olası
-            nedenler, çözüm adımları ve örnek fix kodunu tek ekranda sunar.
+            Fixora, İngilizce console ve browser hatalarını anlaşılır hale getirir; sadece çeviri yapmaz,
+            sorunun nedenini ve nasıl düzelteceğini tek ekranda gösterir.
           </p>
         </div>
 
@@ -125,13 +125,13 @@ function HomePage() {
 
         <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
           <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-            Hesapla güvenli erişim
+            Hesapla analizlerini sakla
           </span>
           <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-            Analiz geçmişi
+            Geçmişten tekrar aç
           </span>
           <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-            Paylaşılabilir bağlantı
+            Link ile paylaş
           </span>
         </div>
       </header>
@@ -157,7 +157,8 @@ function HomePage() {
       <section className="space-y-5">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Neden Fixora?</h2>
         <p className="max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-400">
-          Fixora, hata mesajını yalnızca Türkçeye çevirmek yerine seni çözüme götürecek bir analiz akışı sunar.
+          Fixora, hata mesajını yalnızca Türkçeye çevirmez; önce sorunun ne olduğunu, sonra da hangi sırayla
+          ilerlemen gerektiğini gösterir.
         </p>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {featureCards.map((feature) => (
@@ -313,19 +314,19 @@ function HomePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Junior geliştiriciler</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">Hata mesajını hızlıca anlayıp doğru sırayla ilerlemek isteyenler için.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">İngilizce hata mesajını okuyup nereden başlayacağını hızlıca görmek isteyenler için.</p>
           </article>
           <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">React / JavaScript öğrenenler</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">Yeni kavramlar arasında kaybolmadan pratik çözüm adımlarına ulaşmak isteyenler için.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">Yeni konuları öğrenirken hata nedenini ve çözüm sırasını net görmek isteyenler için.</p>
           </article>
           <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">İngilizce hata mesajlarında zorlananlar</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">Teknik metni Türkçe ve anlaşılır bir dille yorumlamak isteyenler için.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">Teknik metni Türkçe, sade ve uygulanabilir bir dille anlamak isteyenler için.</p>
           </article>
           <article className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Hızlı aksiyon almak isteyenler</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">Sorunu uzun debug seanslarına kalmadan kısa bir planla kapatmak isteyenler için.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">Sorunu uzun debug seanslarına kalmadan kısa bir planla çözmek isteyenler için.</p>
           </article>
         </div>
       </section>
@@ -422,16 +423,16 @@ function HomePage() {
       <section className="rounded-2xl border border-indigo-200 bg-linear-to-r from-indigo-50 to-white p-6 dark:border-indigo-500/30 dark:from-indigo-500/10 dark:to-slate-900">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 sm:text-2xl dark:text-slate-100">İlk hatanı şimdi analiz et</h2>
+            <h2 className="text-xl font-bold text-slate-900 sm:text-2xl dark:text-slate-100">İlk hata mesajını şimdi yapıştır</h2>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              Kopyala, yapıştır, çözüm adımlarını al. Fixora ile hata çözüm sürecini daha öngörülebilir hale getir.
+              Kopyala, yapıştır, çözüm adımlarını al. Fixora ile ilk hata mesajından başlayıp neyin bozulduğunu hızlıca gör.
             </p>
           </div>
           <Link
             to="/analyze"
             className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#6366F1] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#5558E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1]/35"
           >
-            Fixora'yı Dene
+            Kendi hatanı analiz et
           </Link>
         </div>
       </section>

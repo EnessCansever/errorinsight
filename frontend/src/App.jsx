@@ -10,6 +10,7 @@ const AnalyzePage = lazy(() => import('./pages/AnalyzePage'))
 const HistoryPage = lazy(() => import('./pages/HistoryPage'))
 const SharedAnalysisPage = lazy(() => import('./pages/SharedAnalysisPage'))
 const ErrorGuidePage = lazy(() => import('./pages/ErrorGuidePage'))
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/share/:slug" element={<SharedAnalysisPage />} />
           <Route path="/errors/:slug" element={<ErrorGuidePage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/analyze" element={<AnalyzePage />} />
             <Route path="/history" element={<HistoryPage />} />

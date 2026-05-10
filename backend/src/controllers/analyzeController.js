@@ -3,6 +3,31 @@ const History = require('../models/History')
 
 const REUSE_LOOKUP_LIMIT = 40
 
+function getShortUserTag(userId) {
+  if (!userId) {
+    return 'anonymous'
+  }
+
+  const value = String(userId).trim()
+  if (!value) {
+    return 'anonymous'
+  }
+
+  if (value.length <= 8) {
+    return value
+  }
+
+  return `${value.slice(0, 4)}...${value.slice(-4)}`
+}
+
+function getElapsedMs(startTime) {
+  return Number(process.hrtime.bigint() - startTime) / 1e6
+}
+
+function formatMs(value) {
+  return Math.round(value)
+}
+
 function normalizeForMatch(value) {
   if (typeof value !== 'string') {
     return ''
@@ -83,6 +108,9 @@ async function findReusableAnalysis(userId, errorMessage, codeSnippet) {
 }
 
 async function analyzeError(req, res) {
+  const requestStart = process.hrtime.bigint()
+  const userTag = getShortUserTag(req.user?.id)
+
   try {
     const userId = req.user?.id
     const { errorMessage, codeSnippet } = req.body
@@ -103,20 +131,31 @@ async function analyzeError(req, res) {
     }
 
     let analysis = null
+    let cacheHit = false
+    let duplicateCheckMs = 0
+
+    const duplicateCheckStart = process.hrtime.bigint()
 
     try {
       const reusableAnalysis = await findReusableAnalysis(userId, errorMessage, codeSnippet)
       if (reusableAnalysis) {
         analysis = reusableAnalysis
+        cacheHit = true
       }
     } catch (reuseError) {
       console.warn('[analyze] Tekrar kullanim kontrolu basarisiz:', reuseError.message)
+    } finally {
+      duplicateCheckMs = getElapsedMs(duplicateCheckStart)
+      console.info(
+        `[analyze] duplicate_check user=${userTag} cacheHit=${cacheHit} duration_ms=${formatMs(duplicateCheckMs)}`,
+      )
     }
 
     if (!analysis) {
       analysis = await analyzeService.analyzeError(errorMessage, codeSnippet)
     }
 
+    const responsePrepStart = process.hrtime.bigint()
     const resolvedSeoContent =
       typeof analysis.seoContent === 'string' && analysis.seoContent.trim()
         ? analysis.seoContent.trim()
@@ -126,11 +165,14 @@ async function analyzeError(req, res) {
       ...analysis,
       seoContent: resolvedSeoContent,
     }
+    const responsePrepMs = getElapsedMs(responsePrepStart)
 
     let historyId = null
+    let historySaveMs = 0
 
     // Analiz sonucu olusunca gecmise kaydet (kayit hatasi analiz akisini bozmaz)
     try {
+      const historySaveStart = process.hrtime.bigint()
       const createdHistory = await History.create({
         user: userId,
         errorMessage,
@@ -146,9 +188,17 @@ async function analyzeError(req, res) {
       })
 
       historyId = createdHistory._id?.toString() || null
+      historySaveMs = getElapsedMs(historySaveStart)
     } catch (historyError) {
       console.warn('[history] Kayit olusturulamadi:', historyError.message)
     }
+
+    const analysisSource = cacheHit ? 'cache' : analysis.usedFallback ? 'fallback' : 'gemini'
+    const totalMs = getElapsedMs(requestStart)
+
+    console.info(
+      `[analyze] total user=${userTag} source=${analysisSource} cacheHit=${cacheHit} total_ms=${formatMs(totalMs)} duplicate_check_ms=${formatMs(duplicateCheckMs)} save_ms=${formatMs(historySaveMs)} prep_ms=${formatMs(responsePrepMs)} result=success`,
+    )
 
     res.json({
       success: true,
@@ -158,6 +208,12 @@ async function analyzeError(req, res) {
       },
     })
   } catch (error) {
+    const totalMs = getElapsedMs(requestStart)
+    const userTag = getShortUserTag(req.user?.id)
+
+    console.error(
+      `[analyze] total user=${userTag} total_ms=${formatMs(totalMs)} result=error`,
+    )
     console.error('Analyze controller hatası:', error)
     res.status(500).json({
       success: false,

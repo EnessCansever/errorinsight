@@ -13,6 +13,19 @@ const allowedCategories = [
 
 let genAIClient = null
 
+function getElapsedMs(startTime) {
+  return Number(process.hrtime.bigint() - startTime) / 1e6
+}
+
+function formatMs(value) {
+  return Math.round(value)
+}
+
+function logGeminiTiming({ modelName, durationMs, result, reason }) {
+  const extra = reason ? ` reason=${reason}` : ''
+  console.info(`[analyze][gemini] model=${modelName} duration_ms=${formatMs(durationMs)} result=${result}${extra}`)
+}
+
 function getGenAIClient(apiKey) {
   if (!genAIClient) {
     genAIClient = new GoogleGenAI({ apiKey })
@@ -377,14 +390,15 @@ async function analyzeError(errorMessage, codeSnippet = '') {
   const apiKey = process.env.GEMINI_API_KEY
   const suggestedCategory = categorizeError(errorMessage)
   const isDevelopment = (process.env.NODE_ENV || 'development') === 'development'
+  const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
+  const geminiStart = process.hrtime.bigint()
 
   if (!apiKey) {
-    console.warn('[analyzeService] GEMINI_API_KEY bulunamadi, fallback kullaniliyor.')
+    logGeminiTiming({ modelName, durationMs: 0, result: 'fallback', reason: 'no_api_key' })
     return buildFallbackAnalysis(errorMessage, codeSnippet)
   }
 
   try {
-    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
     const client = getGenAIClient(apiKey)
 
     const prompt = buildPrompt(errorMessage, codeSnippet, suggestedCategory)
@@ -407,14 +421,21 @@ async function analyzeError(errorMessage, codeSnippet = '') {
     }
 
     if (!hasUsableModelField(parsedResult)) {
-      console.warn('[analyzeService] Model cevabi kullanilamadi, fallback kullaniliyor.')
+      logGeminiTiming({
+        modelName,
+        durationMs: getElapsedMs(geminiStart),
+        result: 'fallback',
+        reason: 'empty_model_fields',
+      })
       return buildFallbackAnalysis(errorMessage, codeSnippet)
     }
 
+    logGeminiTiming({ modelName, durationMs: getElapsedMs(geminiStart), result: 'ok' })
     return normalizeAnalysis(parsedResult, errorMessage, codeSnippet)
   } catch (error) {
+    const geminiDurationMs = getElapsedMs(geminiStart)
     console.error(`[analyzeService] Gemini analiz hatası: ${error.message}`)
-    console.warn('[analyzeService] Fallback kullaniliyor.')
+    logGeminiTiming({ modelName, durationMs: geminiDurationMs, result: 'fallback', reason: 'error' })
     return buildFallbackAnalysis(errorMessage, codeSnippet)
   }
 }

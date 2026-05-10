@@ -12,6 +12,7 @@ const { requestLogger } = require('./middlewares/requestLogger')
 const env = loadEnvConfig()
 
 const app = express()
+app.set('trust proxy', 1)
 const allowedOrigins = new Set(env.frontendOrigins)
 
 if (env.nodeEnv === 'development') {

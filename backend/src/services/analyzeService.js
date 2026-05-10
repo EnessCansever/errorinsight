@@ -225,19 +225,13 @@ Alanlar tam olarak şu olsun:
   "possibleCauses": ["madde 1", "madde 2"],
   "solutionSteps": ["adım 1", "adım 2"],
   "exampleFixCode": "Kısa düzeltilmiş kod örneği",
-  "notes": "Dikkat edilmesi gerekenler",
-  "seoContent": "150-300 kelime, Türkçe, akıcı ve özgün SEO içeriği"
+  "notes": "Dikkat edilmesi gerekenler"
 }
 
 Kurallar:
 - possibleCauses ve solutionSteps dizi olsun.
 - exampleFixCode kısa olsun ve markdown code fence kullanma.
 - category yukarıdaki değerlerden biri olsun.
-- seoContent mutlaka tek bir string olsun ve markdown kullanmasın.
-- seoContent 150-300 kelime aralığında olsun.
-- seoContent şu akışı doğal biçimde içersin: hatanın genel açıklaması, neden ortaya çıktığı gerçek senaryolar, geliştiricilerin sık yaptığı hatalar, çözüm için mantıksal yaklaşım, kısa bir best practice önerisi.
-- seoContent teknik ama sade bir dille yazılsın, junior geliştirici tarafından anlaşılabilsin.
-- seoContent içinde gereksiz tekrar ve anahtar kelime spam kullanma.
 - Cevap Türkçe olsun ve yazım kurallarına uygun, doğal Türkçe karakterlerle yazılsın.
 `.trim()
 }

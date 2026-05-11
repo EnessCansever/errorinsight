@@ -420,6 +420,27 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="space-y-5">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Kapsam · Sık Sorulan Sorular</h2>
+        <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <p className="text-sm text-slate-700 dark:text-slate-300"><strong>Fixora hangi hatalarda daha iyi çalışır?</strong> JavaScript, React, Node.js, API/network ve build tool hatalarında en güçlü sonuçları verir.</p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-700 dark:text-slate-300"><strong>Hangi dilleri destekler?</strong> İngilizce hata mesajlarını birçok dil için yorumlayabilir; ancak tüm dillerde kusursuz sonuç garantisi yoktur. Çıktı kalitesi hata mesajının netliğine ve sağlanan bağlama bağlıdır.</p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-700 dark:text-slate-300"><strong>Kod parçası eklemek zorunlu mu?</strong> Hayır, zorunlu değil; fakat ilgili kodu eklersen analiz daha net olur.</p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-700 dark:text-slate-300"><strong>Fixora sadece çeviri mi yapıyor?</strong> Hayır. Sadece kelime kelime çeviri yapmaz; hatanın nedenini, olası sebeplerini ve uygulanabilir çözüm adımlarını açıklar.</p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-700 dark:text-slate-300"><strong>Analizlerim kaydediliyor mu?</strong> Evet. Giriş yapan kullanıcıların analizleri geçmişe kaydedilir ve daha sonra erişilebilir.</p>
+          </div>
+        </div>
+      </section>
+
       <section className="rounded-2xl border border-indigo-200 bg-linear-to-r from-indigo-50 to-white p-6 dark:border-indigo-500/30 dark:from-indigo-500/10 dark:to-slate-900">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>

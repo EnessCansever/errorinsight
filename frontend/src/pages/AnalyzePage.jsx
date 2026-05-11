@@ -305,6 +305,9 @@ function AnalyzePage() {
         <p className="max-w-2xl text-sm leading-6 text-slate-700 dark:text-slate-300">
           Console, browser veya terminalde gördüğün İngilizce hata mesajını aşağıya yapıştır. İlgili bileşeni, fonksiyonu veya istek kodunu eklersen analiz daha net olur. Sonuç tamamlandığında hesabına kaydedilir.
         </p>
+        <p className="max-w-2xl text-sm text-slate-500 dark:text-slate-400">
+          Not: En iyi sonuç JavaScript, React, Node.js, API/network ve build tool hatalarında alınır. Diğer dillerde de yorumlama yapılabilir; ancak sonuç bağlama ve hata mesajının açıklığına bağlıdır.
+        </p>
       </header>
 
       <ExampleErrorList onSelect={handleExampleSelect} />

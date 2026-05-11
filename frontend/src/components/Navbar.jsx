@@ -43,7 +43,7 @@ function Navbar() {
   }
 
   return (
-    <header className="border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-900/90">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/90">
       <nav className="mx-auto w-full max-w-6xl px-3 py-3 sm:px-4 sm:py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
